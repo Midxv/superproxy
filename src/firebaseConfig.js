@@ -4,12 +4,12 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 // ⚠️ REPLACE THESE VALUES WITH YOUR OWN FROM FIREBASE CONSOLE
 const firebaseConfig = {
-    apiKey: "AIzaSy...",
-    authDomain: "your-app.firebaseapp.com",
-    projectId: "your-app",
-    storageBucket: "your-app.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:12345:web:abcde"
+    apiKey: "AIzaSyCq9NNjY7Ek64WwmbLh9gB9fg6PyE6Gbxs",
+    authDomain: "proxy-75f64.firebaseapp.com",
+    projectId: "proxy-75f64",
+    storageBucket: "proxy-75f64.firebasestorage.app",
+    messagingSenderId: "165566576152",
+    appId: "1:165566576152:web:a20ad1537c956af64c756d"
 };
 
 const app = initializeApp(firebaseConfig);
