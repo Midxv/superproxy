@@ -1,154 +1,162 @@
-/* src/App.css */
+/* src/App.css - Complete Violet & White Theme */
+
 :root {
-    /* NEW THEME: Violet & White (Fintech Style) */
-    --bg-main: #f8f9ff;       /* Very light violet tint for page background */
-    --bg-card: #ffffff;       /* Pure white for cards/sidebar */
+    /* COLORS */
+    --bg-main: #f8f9ff;       /* Soft Violet Tint Background */
+    --bg-card: #ffffff;       /* Pure White Cards */
 
     --primary: #7c3aed;       /* Vibrant Violet */
-    --primary-hover: #6d28d9; /* Deep Violet for hover states */
-    --accent: #f59e0b;        /* Amber/Gold for alerts or special buttons */
+    --primary-hover: #6d28d9; /* Deep Violet */
+    --accent: #f59e0b;        /* Amber (Alerts/Crypto) */
 
-    --text-main: #1e1b4b;     /* Deep dark violet (almost black) for headings */
-    --text-muted: #6b7280;    /* Cool gray for secondary text */
+    --text-main: #111827;     /* Pure Black/Dark Gray */
+    --text-muted: #6b7280;    /* Soft Gray */
 
-    --border: #e5e7eb;        /* Light gray for borders */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 10px 15px -3px rgba(124, 58, 237, 0.05); /* Soft violet shadow */
+    --border: #e5e7eb;        /* Light Gray Border */
+
+    /* SHADOWS & EFFECTS */
+    --radius: 24px;
+    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-hover: 0 20px 25px -5px rgba(124, 58, 237, 0.15), 0 10px 10px -5px rgba(124, 58, 237, 0.1);
 }
 
-/* Global Reset & Typography */
+/* --- GLOBAL RESETS --- */
 body {
     margin: 0;
     background-color: var(--bg-main);
     color: var(--text-main);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
 }
 
 * { box-sizing: border-box; }
 
-/* --- SIDEBAR LAYOUT (If used) --- */
-.sidebar {
-    width: 280px;
-    height: 100vh;
-    background: var(--bg-card);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    position: fixed;
-    left: 0; top: 0;
-    z-index: 100;
-    transition: transform 0.3s ease;
-    overflow-y: auto;
-    box-shadow: var(--shadow-sm);
+button { cursor: pointer; font-family: inherit; }
+
+/* --- DASHBOARD HOME STYLES --- */
+
+.dashboard-container {
+    max-width: 1200px; margin: 0 auto; padding: 60px 20px; text-align: center;
 }
 
-/* Navigation Items */
-.nav-container { display: flex; flex-direction: column; gap: 5px; margin-top: 20px; }
-
-.nav-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px; color: var(--text-muted); cursor: pointer; border-radius: 8px;
-    transition: 0.2s; font-weight: 500;
+/* Big Header */
+.brand-title {
+    font-size: 56px; font-weight: 900; letter-spacing: -2px; margin-bottom: 40px; color: #1e1b4b;
 }
 
-/* Hover: Light Violet BG + Dark Violet Text */
-.nav-item:hover, .nav-item.active {
-    background: #f5f3ff; /* Very light violet */
-    color: var(--primary);
-}
-
-.flex-center { display: flex; align-items: center; gap: 12px; }
-
-/* Submenus (Accordion) */
-.sub-menu {
-    display: flex; flex-direction: column; gap: 4px;
-    max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
-    margin-left: 12px; padding-left: 12px;
-    border-left: 2px solid var(--border); /* Thicker light border */
-}
-.sub-menu.show { max-height: 300px; margin-top: 5px; margin-bottom: 10px; }
-
-.sub-item {
-    padding: 8px 12px; color: var(--text-muted); text-decoration: none; font-size: 14px;
-    display: block; border-radius: 6px; transition: 0.2s;
-}
-.sub-item:hover {
-    color: var(--primary);
-    background: transparent;
-    transform: translateX(4px); /* Slight slide effect instead of bg change */
-}
-
-/* Balance Card */
+/* Black Balance Card */
 .balance-card {
-    background: #f3f4f6; /* Light gray background */
+    background: white; padding: 40px 60px; border-radius: 30px;
+    box-shadow: var(--shadow-card); display: inline-flex; flex-direction: column;
+    align-items: center; border: 1px solid white; margin-bottom: 60px;
+}
+.balance-label {
+    font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 10px;
+}
+.balance-value {
+    font-size: 64px; font-weight: 800; color: #000000; margin: 0 0 25px 0; line-height: 1;
+}
+.btn-add-funds {
+    background: var(--primary); color: white; border: none; padding: 14px 32px;
+    border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); transition: transform 0.2s;
+    display: flex; align-items: center; gap: 8px;
+}
+.btn-add-funds:hover { transform: scale(1.05); background: var(--primary-hover); }
+
+/* Product Cards Grid */
+.products-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px; margin-bottom: 80px; text-align: left;
+}
+.product-card {
+    background: white; border: 1px solid var(--border); border-radius: 24px;
+    padding: 30px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex; flex-direction: column; gap: 15px; box-shadow: var(--shadow-card);
+}
+.product-card:hover {
+    transform: translateY(-10px) scale(1.02); box-shadow: var(--shadow-hover);
+    border-color: rgba(124, 58, 237, 0.2);
+}
+.product-card h3 { color: #111; font-size: 20px; margin: 0; font-weight: 700; }
+.product-card .desc { color: #666; font-size: 14px; line-height: 1.5; margin: 0; }
+.product-card .price-tag {
+    color: var(--primary); font-weight: 700; background: #f5f3ff;
+    padding: 6px 12px; border-radius: 20px; width: fit-content;
+}
+
+/* Reviews Section */
+.reviews-section { border-top: 1px solid #e5e7eb; padding-top: 60px; }
+.reviews-header {
+    display: flex; justify-content: center; align-items: center; gap: 10px;
+    margin-bottom: 40px; color: #111;
+}
+.reviews-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px; text-align: left;
+}
+/* Review Cards (Pop Animation) */
+.review-card-white {
+    background: white !important; border: 1px solid #e5e7eb; border-radius: 24px;
+    padding: 24px; box-shadow: var(--shadow-card); text-align: left;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: default;
+}
+.review-card-white:hover {
+    transform: translateY(-5px) scale(1.01); box-shadow: var(--shadow-hover);
+    border-color: rgba(124, 58, 237, 0.2);
+}
+.review-text { color: #374151; font-size: 14px; line-height: 1.6; margin-bottom: 15px; }
+.review-user { color: #111; font-weight: 700; font-size: 12px; text-transform: uppercase; }
+
+
+/* --- PAYMENT PROCESS PAGE (Crypto Timer) --- */
+.payment-page-container {
+    min-height: 100vh; display: flex; justify-content: center; align-items: center;
+    padding: 20px; background: var(--bg-main);
+}
+.payment-card-authentic {
+    background: white; width: 100%; max-width: 500px; padding: 40px;
+    border-radius: 30px; text-align: center; box-shadow: var(--shadow-card);
     border: 1px solid var(--border);
-    padding: 16px; border-radius: 12px; margin-top: 20px;
-    display: flex; justify-content: space-between; align-items: center;
-}
-.balance-label { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-.balance-amount { font-size: 18px; font-weight: 800; color: var(--text-main); }
-
-.btn-small {
-    background: var(--primary); color: white;
-    border: none; padding: 6px 14px; border-radius: 6px;
-    font-size: 12px; font-weight: 600; cursor: pointer;
-    box-shadow: 0 2px 5px rgba(124, 58, 237, 0.3);
 }
 
-/* Sales Card */
-.sales-card {
-    margin-top: auto;
-    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); /* Dark gradient for contrast */
-    padding: 20px;
-    border-radius: 16px; border: none; text-align: center;
-    color: white;
-    box-shadow: var(--shadow-lg);
+/* Circle Timer SVG */
+.timer-container { position: relative; width: 260px; height: 260px; margin: 0 auto 40px; cursor: pointer; }
+.timer-svg { transform: rotate(-90deg); }
+.timer-bg { fill: none; stroke: #f3f4f6; }
+.timer-progress { fill: none; stroke: var(--primary); transition: stroke-dashoffset 1s linear; }
+.timer-center-content {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
 }
-.sales-card p { margin: 0 0 15px 0; font-size: 14px; font-weight: 600; color: white; }
+.time-text { font-size: 56px; font-weight: 800; color: var(--text-main); line-height: 1; }
 
-.btn-outline {
-    width: 100%; padding: 10px;
-    border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1);
-    color: white; border-radius: 8px; font-weight: 600; cursor: pointer;
-    transition: 0.2s;
+/* Address Box */
+.address-box {
+    background: #f9fafb; border: 2px solid var(--border); padding: 15px;
+    border-radius: 16px; display: flex; justify-content: space-between;
+    align-items: center; cursor: pointer; transition: 0.2s;
 }
-.btn-outline:hover { background: white; color: var(--primary); }
+.address-box:hover { border-color: var(--primary); background: #f5f3ff; }
+.crypto-address {
+    font-family: monospace; font-size: 14px; word-break: break-all;
+    text-align: left; color: var(--text-main);
+}
 
-/* Header & Mobile Toggles */
-.sidebar-header { display: flex; justify-content: space-between; align-items: center; }
-.close-btn { display: none; background: none; border: none; color: var(--text-main); cursor: pointer; }
+/* Animations */
+.animate-fade-in { animation: fadeIn 0.5s ease-out; }
+.animate-slide-down { animation: slideDown 0.3s ease-out; }
+.animate-pop { animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
 
-/* Mobile Topbar */
-.mobile-topbar { display: none; } /* Hidden on Desktop */
-.overlay { display: none; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); }}
+@keyframes slideDown { from { opacity:0; transform: translateY(-10px); height: 0; } to { opacity:1; transform: translateY(0); height: auto; }}
+@keyframes popUp { from { opacity:0; transform: scale(0.8); } to { opacity:1; transform: scale(1); }}
 
-/* --- MOBILE RESPONSIVENESS (< 768px) --- */
+/* Mobile Responsive */
 @media (max-width: 768px) {
-    /* Sidebar slides in from left */
-    .sidebar { transform: translateX(-100%); width: 85%; box-shadow: 5px 0 25px rgba(0,0,0,0.1); }
-    .sidebar.open { transform: translateX(0); }
-
-    /* Show hamburger button with white background */
-    .mobile-topbar {
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 15px 20px;
-        background: var(--bg-card); /* White */
-        border-bottom: 1px solid var(--border);
-        position: sticky; top: 0; z-index: 50;
-        color: var(--text-main);
-    }
-    .close-btn { display: block; }
-
-    /* Dark Overlay background */
-    .overlay.active {
-        display: block; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(30, 27, 75, 0.4); /* Dark violet tint overlay */
-        backdrop-filter: blur(2px);
-        z-index: 90;
-    }
-
-    /* Adjust main content margin */
-    main { margin-left: 0 !important; }
+    .brand-title { font-size: 42px; }
+    .balance-value { font-size: 48px; }
+    .balance-card { width: 100%; padding: 30px; }
+    .layout-grid { grid-template-columns: 1fr; }
 }
