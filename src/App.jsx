@@ -9,16 +9,13 @@ import OrderPage from './pages/OrderPage';
 import LoginPage from './pages/LoginPage';
 import LoadingScreen from './components/LoadingScreen';
 
-// --- MAIN APP ---
 function App() {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
 
-    // Initial Auth Check
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
-            // Keep loading screen for at least 2 seconds for effect
             setTimeout(() => setLoading(false), 2000);
         });
         return () => unsubscribe();
@@ -26,25 +23,29 @@ function App() {
 
     return (
         <BrowserRouter>
-            {/* 1. Global Loading Screen (Shows on every refresh) */}
             <LoadingScreen />
 
-            {/* 2. Main Layout (No Sidebar) */}
-            <div style={{ minHeight: '100vh', background: 'var(--bg-dark)', color: 'white' }}>
+            {/* Main Layout - Now uses CSS background instead of inline styles */}
+            <div className="app-container">
 
                 {!loading && (
                     <Routes>
                         <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <LoginPage />} />
-
                         <Route path="/dashboard" element={user ? <DashboardHome /> : <Navigate to="/login" />} />
-
                         <Route path="/order" element={user ? <OrderPage /> : <Navigate to="/login" />} />
-
                         <Route path="*" element={<Navigate to="/dashboard" />} />
                     </Routes>
                 )}
 
             </div>
+
+            {/* Ensure full height background */}
+            <style jsx>{`
+        .app-container {
+          min-height: 100vh;
+          background-color: var(--bg-main);
+        }
+      `}</style>
         </BrowserRouter>
     );
 }
