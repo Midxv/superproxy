@@ -1,0 +1,18 @@
+:root {
+    --bg-dark: #121212;
+    --bg-card: #1e1e1e;
+    --primary: #00c9a7;
+    --accent: #f2994a;
+    --text-main: #ffffff;
+    --text-muted: #a0a0a0;
+    --border: #333333;
+}
+
+body {
+    margin: 0;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
