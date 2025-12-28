@@ -64,7 +64,7 @@ const DashboardHome = () => {
                 <ProductCard
                     icon={<Smartphone size={32} color="#f2994a" />}
                     title="Mobile"
-                    price="from $80/Month"
+                    price="from $10/Month"
                     features={[
                         "Real 4G/5G mobile network",
                         "Auto-rotation available",
