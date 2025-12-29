@@ -71,12 +71,11 @@ const OrderPage = () => {
     // Handle Country Change
     const handleCountryChange = (countryName) => {
         setSelectedCountry(countryName);
-        setSelectedCity(cities[countryName][0]); // Default to first city of new country
+        setSelectedCity(cities[countryName][0]);
     };
 
     useEffect(() => {
         let price = 0;
-
         if (isResidential) {
             const gbMap = { '10GB': 10, '50GB': 50, '300GB': 300, '1000GB': 1000 };
             const gbs = gbMap[plan] || 10;
@@ -89,7 +88,6 @@ const OrderPage = () => {
             if (plan === '30 Units') multiplier = 30;
             price = base * multiplier;
         }
-
         setCalculatedPrice(price.toFixed(2));
     }, [plan, productType, isResidential]);
 
@@ -169,73 +167,11 @@ const OrderPage = () => {
             <div className="content-wrapper">
                 <h1 className="page-title">Checkout: {productType}</h1>
 
-                <div className="layout-grid">
+                {/* LAYOUT GRID: SWAPPED - Summary LEFT, Methods RIGHT */}
+                <div className="layout-grid-swapped">
 
-                    <div className="left-section">
-                        <h3 className="section-header">Select Payment Method</h3>
-                        <div className="payment-options-stack">
-
-                            {/* Card - Strict Check */}
-                            <MethodItem
-                                active={selectedMethod === 'card'}
-                                onClick={() => setSelectedMethod('card')}
-                                icon={<CreditCard className="icon-violet" />}
-                                title="Cards"
-                            >
-                                <div className="method-content animate-slide-down">
-                                    <div className="card-form-grid">
-                                        <div className={`input-group full ${isShaking && formErrors.number ? 'shake' : ''}`}>
-                                            <label className={formErrors.number ? 'text-red-500' : ''}>Card Number</label>
-                                            <div className="input-wrapper-relative">
-                                                <input type="text" placeholder="0000 0000 0000 0000" className={`secure-input ${formErrors.number ? 'input-error-border' : ''}`} value={cardForm.number} onChange={(e) => handleInputChange('number', e.target.value)} maxLength={19} />
-                                                <Lock size={16} className="input-lock-icon" />
-                                            </div>
-                                        </div>
-                                        <div className={`input-group ${isShaking && formErrors.expiry ? 'shake' : ''}`}>
-                                            <label className={formErrors.expiry ? 'text-red-500' : ''}>Expiry</label>
-                                            <input type="text" placeholder="MM/YY" className={`secure-input ${formErrors.expiry ? 'input-error-border' : ''}`} value={cardForm.expiry} onChange={(e) => handleInputChange('expiry', e.target.value)} maxLength={5} />
-                                        </div>
-                                        <div className={`input-group ${isShaking && formErrors.cvc ? 'shake' : ''}`}>
-                                            <label className={formErrors.cvc ? 'text-red-500' : ''}>CVC</label>
-                                            <input type="text" placeholder="123" className={`secure-input ${formErrors.cvc ? 'input-error-border' : ''}`} value={cardForm.cvc} onChange={(e) => handleInputChange('cvc', e.target.value)} maxLength={4} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </MethodItem>
-
-                            {/* Crypto */}
-                            <MethodItem
-                                active={selectedMethod === 'crypto'}
-                                onClick={() => setSelectedMethod('crypto')}
-                                icon={<Bitcoin className="icon-gold" />}
-                                title="Cryptocurrency"
-                                badge="-5% Fees"
-                            >
-                                <div className="method-content animate-slide-down">
-                                    <p className="label-sm">Select coin:</p>
-                                    <div className="modern-crypto-grid">
-                                        {cryptoOptions.map(coin => (
-                                            <div key={coin.id} className={`crypto-selection-card ${selectedCrypto?.id === coin.id ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setSelectedCrypto(coin); }} style={{'--highlight-color': coin.color}}>
-                                                <div className="coin-logo-container">{coin.icon}</div>
-                                                <div className="coin-info"><span className="coin-name">{coin.name}</span><span className="coin-ticker">{coin.id}</span></div>
-                                                {selectedCrypto?.id === coin.id && <div className="active-check"><Check size={18} strokeWidth={3} /></div>}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </MethodItem>
-
-                            <MethodItem
-                                active={selectedMethod === 'alibaba'}
-                                onClick={() => setSelectedMethod('alibaba')}
-                                title="Alibaba / Alipay"
-                                icon={<Globe className="icon-orange" />}
-                            />
-
-                        </div>
-                    </div>
-
-                    <div className="right-section">
+                    {/* === LEFT: ORDER SUMMARY === */}
+                    <div className="left-summary-section">
                         <div className="summary-card">
                             <h3>Order Summary</h3>
 
@@ -300,84 +236,181 @@ const OrderPage = () => {
                         </div>
                     </div>
 
+                    {/* === RIGHT: PAYMENT METHODS === */}
+                    <div className="right-methods-section">
+                        <h3 className="section-header">Select Payment Method</h3>
+                        <div className="payment-options-stack">
+
+                            {/* Card - Strict Check + Lock Icon FIXED Position */}
+                            <MethodItem
+                                active={selectedMethod === 'card'}
+                                onClick={() => setSelectedMethod('card')}
+                                icon={<CreditCard className="icon-violet" />}
+                                title="Cards"
+                            >
+                                <div className="method-content animate-slide-down">
+                                    <div className="card-form-grid">
+
+                                        {/* Number */}
+                                        <div className={`input-group full ${isShaking && formErrors.number ? 'shake' : ''}`}>
+                                            <label className={formErrors.number ? 'text-red-500' : ''}>
+                                                {formErrors.number ? 'Wrong number' : 'Card Number'}
+                                            </label>
+                                            <div className="input-wrapper-relative">
+                                                <input
+                                                    type="text"
+                                                    placeholder="0000 0000 0000 0000"
+                                                    className={`secure-input ${formErrors.number ? 'input-error-border' : ''}`}
+                                                    value={cardForm.number}
+                                                    onChange={(e) => handleInputChange('number', e.target.value)}
+                                                    maxLength={19}
+                                                />
+                                                <Lock size={16} className="input-lock-icon-right" /> {/* Class Changed */}
+                                            </div>
+                                        </div>
+
+                                        {/* Expiry */}
+                                        <div className={`input-group ${isShaking && formErrors.expiry ? 'shake' : ''}`}>
+                                            <label className={formErrors.expiry ? 'text-red-500' : ''}>Expiry</label>
+                                            <input
+                                                type="text"
+                                                placeholder="MM/YY"
+                                                className={`secure-input ${formErrors.expiry ? 'input-error-border' : ''}`}
+                                                value={cardForm.expiry}
+                                                onChange={(e) => handleInputChange('expiry', e.target.value)}
+                                                maxLength={5}
+                                            />
+                                        </div>
+
+                                        {/* CVC */}
+                                        <div className={`input-group ${isShaking && formErrors.cvc ? 'shake' : ''}`}>
+                                            <label className={formErrors.cvc ? 'text-red-500' : ''}>CVC</label>
+                                            <input
+                                                type="text"
+                                                placeholder="123"
+                                                className={`secure-input ${formErrors.cvc ? 'input-error-border' : ''}`}
+                                                value={cardForm.cvc}
+                                                onChange={(e) => handleInputChange('cvc', e.target.value)}
+                                                maxLength={4}
+                                            />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </MethodItem>
+
+                            {/* Crypto */}
+                            <MethodItem
+                                active={selectedMethod === 'crypto'}
+                                onClick={() => setSelectedMethod('crypto')}
+                                icon={<Bitcoin className="icon-gold" />}
+                                title="Cryptocurrency"
+                                badge="-5% Fees"
+                            >
+                                <div className="method-content animate-slide-down">
+                                    <p className="label-sm">Select coin:</p>
+                                    <div className="modern-crypto-grid">
+                                        {cryptoOptions.map(coin => (
+                                            <div key={coin.id} className={`crypto-selection-card ${selectedCrypto?.id === coin.id ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setSelectedCrypto(coin); }} style={{'--highlight-color': coin.color}}>
+                                                <div className="coin-logo-container">{coin.icon}</div>
+                                                <div className="coin-info"><span className="coin-name">{coin.name}</span><span className="coin-ticker">{coin.id}</span></div>
+                                                {selectedCrypto?.id === coin.id && <div className="active-check"><Check size={18} strokeWidth={3} /></div>}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </MethodItem>
+
+                            <MethodItem
+                                active={selectedMethod === 'alibaba'}
+                                onClick={() => setSelectedMethod('alibaba')}
+                                title="Alibaba / Alipay"
+                                icon={<Globe className="icon-orange" />}
+                            />
+
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
             <style jsx>{`
-        /* Reuse styles from AddFundsPage */
-        .page-container { min-height: 100vh; padding: 0 20px 40px; }
-        .content-wrapper { max-width: 1000px; margin: 0 auto; }
-        .page-title { font-size: 32px; font-weight: 800; margin-bottom: 30px; margin-top: 10px; }
-        .layout-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; }
-        .payment-options-stack { display: flex; flex-direction: column; gap: 15px; }
-        
-        .method-item { background: white; border: 2px solid var(--border); border-radius: 20px; overflow: hidden; cursor: pointer; transition: 0.2s; }
-        .method-item.active { border-color: var(--primary); box-shadow: var(--shadow-card); }
-        .method-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .method-left { display: flex; align-items: center; gap: 15px; font-weight: 700; }
-        .method-right { display: flex; align-items: center; gap: 10px; }
-        .badge-discount { font-size: 12px; background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 12px; font-weight: bold; }
+                /* Reuse styles from AddFundsPage */
+                .page-container { min-height: 100vh; padding: 0 20px 40px; }
+                .content-wrapper { max-width: 1000px; margin: 0 auto; }
+                .page-title { font-size: 32px; font-weight: 800; margin-bottom: 30px; margin-top: 10px; }
+                .layout-grid-swapped { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; } /* SWAPPED COLUMNS */
+                .payment-options-stack { display: flex; flex-direction: column; gap: 15px; }
 
-        .method-content { border-top: 1px solid var(--border); padding: 25px; background: #f8f9ff; }
-        .card-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .input-group.full { grid-column: span 2; }
-        .input-group { position: relative; }
-        .input-wrapper-relative { position: relative; }
-        .input-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: color 0.2s; }
-        .text-red-500 { color: #ef4444 !important; }
+                .method-item { background: white; border: 2px solid var(--border); border-radius: 20px; overflow: hidden; cursor: pointer; transition: 0.2s; }
+                .method-item.active { border-color: var(--primary); box-shadow: var(--shadow-card); }
+                .method-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+                .method-left { display: flex; align-items: center; gap: 15px; font-weight: 700; }
+                .method-right { display: flex; align-items: center; gap: 10px; }
+                .badge-discount { font-size: 12px; background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 12px; font-weight: bold; }
 
-        .secure-input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; outline: none; font-size: 15px; background: white; transition: all 0.2s; }
-        .secure-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
-        .secure-input::placeholder { color: #ccc; }
-        .input-lock-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-        .input-error-border { border-color: #ef4444 !important; background: #fff5f5; }
-        
-        .label-sm { font-size: 12px; font-weight: 600; color: #888; margin-bottom: 12px; display: block; }
-        .modern-crypto-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; }
-        .crypto-selection-card { background: white; border: 2px solid var(--border); border-radius: 16px; padding: 15px; display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; transition: all 0.2s ease; position: relative; }
-        .crypto-selection-card:hover { border-color: #d1d5db; transform: translateY(-2px); }
-        .crypto-selection-card.active { border-color: var(--highlight-color); background: #fff; box-shadow: 0 8px 20px -5px var(--highlight-color-soft, rgba(0,0,0,0.1)); }
-        .coin-logo-container { margin-bottom: 10px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); transition: 0.2s; }
-        .crypto-selection-card.active .coin-logo-container { transform: scale(1.1); }
-        .coin-info { display: flex; flex-direction: column; }
-        .coin-name { font-weight: 700; font-size: 14px; color: var(--text-main); }
-        .coin-ticker { font-size: 12px; color: var(--text-muted); font-weight: 600; }
-        .active-check { position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; background: var(--highlight-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+                .method-content { border-top: 1px solid var(--border); padding: 25px; background: #f8f9ff; }
+                .card-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+                .input-group.full { grid-column: span 2; }
+                .input-group { position: relative; }
+                .input-wrapper-relative { position: relative; }
+                .input-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: color 0.2s; }
+                .text-red-500 { color: #ef4444 !important; }
 
-        .summary-card { background: white; padding: 30px; border-radius: 30px; box-shadow: var(--shadow-hover); border: 1px solid white; position: sticky; top: 30px; }
-        .summary-row-block { margin-bottom: 20px; }
-        .plan-select-large { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); font-weight: 600; font-size: 16px; outline: none; }
-        
-        .country-grid-small { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .country-pill { padding: 8px; border: 1px solid var(--border); border-radius: 8px; background: white; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .country-pill:hover { border-color: var(--primary); color: var(--primary); }
-        .country-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
+                .secure-input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; outline: none; font-size: 15px; background: white; transition: all 0.2s; }
+                .secure-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
+                .secure-input::placeholder { color: #ccc; }
 
-        .divider { height: 1px; background: var(--border); margin: 25px 0; }
-        .total-row { display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: 700; margin-bottom: 25px; }
-        .price-tag { font-size: 32px; color: var(--primary); }
-        .btn-checkout { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 16px; font-weight: 700; font-size: 18px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); }
-        .btn-checkout:hover { background: var(--primary-hover); transform: translateY(-2px); }
-        .secure-footer { margin-top: 20px; display: flex; justify-content: center; gap: 8px; color: var(--text-muted); font-size: 13px; }
+                /* LOCK ICON FIXED TO RIGHT */
+                .input-lock-icon-right { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
 
-        .error-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); z-index: 9999; backdrop-filter: blur(4px); }
-        .error-toast { background: white; width: 90%; max-width: 400px; padding: 30px; border-radius: 24px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 20px 60px rgba(220, 38, 38, 0.2); position: relative; animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
-        .error-icon-box { width: 70px; height: 70px; background: #ef4444; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4); }
-        .error-content h3 { font-size: 22px; color: #111; margin-bottom: 10px; }
-        .error-content p { color: #666; font-size: 15px; line-height: 1.5; }
-        .close-toast { position: absolute; top: 15px; right: 15px; background: #f3f4f6; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555; }
-        
-        .icon-violet { color: var(--primary); } .icon-gold { color: #f59e0b; } .icon-orange { color: #f97316; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
-        .shake { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
-        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
-        .animate-slide-down { animation: slideDown 0.3s ease-out; }
-        .animate-pop { animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
-        @keyframes fadeIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); }}
-        @keyframes slideDown { from { opacity:0; transform: translateY(-10px); height: 0; } to { opacity:1; transform: translateY(0); height: auto; }}
-        @keyframes popUp { from { opacity:0; transform: scale(0.8); } to { opacity:1; transform: scale(1); }}
-        @media (max-width: 900px) { .layout-grid { grid-template-columns: 1fr; } .summary-card { position: static; } }
-      `}</style>
+                .input-error-border { border-color: #ef4444 !important; background: #fff5f5; }
+                @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+                .shake { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
+
+                .modern-crypto-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; }
+                .crypto-selection-card { background: white; border: 2px solid var(--border); border-radius: 16px; padding: 15px; display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; transition: all 0.2s ease; position: relative; }
+                .crypto-selection-card:hover { border-color: #d1d5db; transform: translateY(-2px); }
+                .crypto-selection-card.active { border-color: var(--highlight-color); background: #fff; box-shadow: 0 8px 20px -5px var(--highlight-color-soft, rgba(0,0,0,0.1)); }
+                .coin-logo-container { margin-bottom: 10px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); transition: 0.2s; }
+                .crypto-selection-card.active .coin-logo-container { transform: scale(1.1); }
+                .coin-info { display: flex; flex-direction: column; }
+                .coin-name { font-weight: 700; font-size: 14px; color: var(--text-main); }
+                .coin-ticker { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+                .active-check { position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; background: var(--highlight-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+                .summary-card { background: white; padding: 30px; border-radius: 30px; box-shadow: var(--shadow-hover); border: 1px solid white; position: sticky; top: 30px; }
+                .summary-row-block { margin-bottom: 20px; }
+                .plan-select-large { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); font-weight: 600; font-size: 16px; outline: none; }
+
+                .country-grid-small { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+                .country-pill { padding: 8px; border: 1px solid var(--border); border-radius: 8px; background: white; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+                .country-pill:hover { border-color: var(--primary); color: var(--primary); }
+                .country-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+                .divider { height: 1px; background: var(--border); margin: 25px 0; }
+                .total-row { display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: 700; margin-bottom: 25px; }
+                .price-tag { font-size: 32px; color: var(--primary); }
+                .btn-checkout { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 16px; font-weight: 700; font-size: 18px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); }
+                .btn-checkout:hover { background: var(--primary-hover); transform: translateY(-2px); }
+                .secure-footer { margin-top: 20px; display: flex; justify-content: center; gap: 8px; color: var(--text-muted); font-size: 13px; }
+
+                .error-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); z-index: 9999; backdrop-filter: blur(4px); }
+                .error-toast { background: white; width: 90%; max-width: 400px; padding: 30px; border-radius: 24px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 20px 60px rgba(220, 38, 38, 0.2); position: relative; animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+                .error-icon-box { width: 70px; height: 70px; background: #ef4444; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4); }
+                .error-content h3 { font-size: 22px; color: #111; margin-bottom: 10px; }
+                .error-content p { color: #666; font-size: 15px; line-height: 1.5; }
+                .close-toast { position: absolute; top: 15px; right: 15px; background: #f3f4f6; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555; }
+
+                .icon-violet { color: var(--primary); } .icon-gold { color: #f59e0b; } .icon-orange { color: #f97316; }
+                .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+                .animate-slide-down { animation: slideDown 0.3s ease-out; }
+                .animate-pop { animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+                @keyframes fadeIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); }}
+                @keyframes slideDown { from { opacity:0; transform: translateY(-10px); height: 0; } to { opacity:1; transform: translateY(0); height: auto; }}
+                @keyframes popUp { from { opacity:0; transform: scale(0.8); } to { opacity:1; transform: scale(1); }}
+                @media (max-width: 900px) { .layout-grid-swapped { grid-template-columns: 1fr; } .summary-card { position: static; } }
+            `}</style>
         </div>
     );
 };
