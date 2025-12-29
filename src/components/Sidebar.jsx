@@ -1,112 +1,110 @@
 // src/components/Sidebar.jsx
-import React, { useState } from 'react';
-import { Home, Server, PenTool, HelpCircle, Lightbulb, Users, ChevronDown, ChevronRight, X } from 'lucide-react';
+import React from 'react';
+import { X, ShoppingBag, HelpCircle, LogOut } from 'lucide-react';
+import { signOut } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
+import { useNavigate } from 'react-router-dom';
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
-    // State for collapsible menus
-    const [showProxies, setShowProxies] = useState(true);
-    const [showTools, setShowTools] = useState(false);
+const Sidebar = ({ isOpen, onClose }) => {
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        await signOut(auth);
+        navigate('/login');
+    };
 
     return (
         <>
-            {/* Mobile Overlay (Dark background when menu is open on phone) */}
+            {/* 1. DARK OVERLAY (Click to close) */}
             <div
-                className={`overlay ${isOpen ? 'active' : ''}`}
-                onClick={toggleSidebar}
-            ></div>
+                className={`sidebar-overlay ${isOpen ? 'active' : ''}`}
+                onClick={onClose}
+            />
 
-            <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+            {/* 2. SIDEBAR DRAWER */}
+            <div className={`sidebar-drawer ${isOpen ? 'open' : ''}`}>
 
-                {/* Header (Logo + Close Button for Mobile) */}
+                {/* Header */}
                 <div className="sidebar-header">
-                    <h2>Super<span style={{color: 'var(--primary)'}}>Proxy</span></h2>
-                    <button className="close-btn" onClick={toggleSidebar}>
+                    <h2 className="sidebar-brand">Menu</h2>
+                    <button className="btn-close" onClick={onClose}>
                         <X size={24} />
                     </button>
                 </div>
 
-                {/* Balance Card (Matches Screenshot top left) */}
-                <div className="balance-card">
-                    <div className="balance-info">
-                        <span className="balance-label">Balance</span>
-                        <span className="balance-amount">$0.00</span>
-                    </div>
-                    <button className="btn-small">Add funds</button>
-                </div>
+                {/* Menu Items */}
+                <nav className="sidebar-nav">
+                    <button className="nav-btn" onClick={() => navigate('/order')}>
+                        <ShoppingBag size={20} /> Orders
+                    </button>
 
-                {/* Navigation */}
-                <div className="nav-container">
+                    <button className="nav-btn" onClick={() => alert('Support Live Chat opening...')}>
+                        <HelpCircle size={20} /> Help & Support
+                    </button>
+                </nav>
 
-                    <NavItem icon={<Home size={20} />} text="Home" active />
-
-                    {/* Proxies Section (Collapsible) */}
-                    <div className="nav-group">
-                        <div
-                            className="nav-item group-header"
-                            onClick={() => setShowProxies(!showProxies)}
-                        >
-                            <div className="flex-center">
-                                <Server size={20} />
-                                <span>Proxies</span>
-                            </div>
-                            {showProxies ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                        </div>
-
-                        {/* Dropdown Items */}
-                        <div className={`sub-menu ${showProxies ? 'show' : ''}`}>
-                            <a href="#" className="sub-item">Residential</a>
-                            <a href="#" className="sub-item">ISP</a>
-                            <a href="#" className="sub-item">Datacenter</a>
-                            <a href="#" className="sub-item">Mobile</a>
-                            <a href="#" className="sub-item">Web Unblocker</a>
-                        </div>
-                    </div>
-
-                    {/* Tools Section (Collapsible) */}
-                    <div className="nav-group">
-                        <div
-                            className="nav-item group-header"
-                            onClick={() => setShowTools(!showTools)}
-                        >
-                            <div className="flex-center">
-                                <PenTool size={20} />
-                                <span>Tools</span>
-                            </div>
-                            {showTools ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                        </div>
-                        <div className={`sub-menu ${showTools ? 'show' : ''}`}>
-                            <a href="#" className="sub-item">API Tester</a>
-                            <a href="#" className="sub-item">Proxy Checker</a>
-                        </div>
-                    </div>
-
-                    <div className="divider"></div>
-
-                    <NavItem icon={<HelpCircle size={20} />} text="Help Center" />
-                    <NavItem icon={<Lightbulb size={20} />} text="Got a Suggestion?" />
-                    <NavItem icon={<Users size={20} />} text="Referral program" />
-
-                </div>
-
-                {/* Bottom Call to Action (Sales Card) */}
-                <div className="sales-card">
-                    <p>Have a large project?</p>
-                    <button className="btn-outline">Contact sales</button>
+                {/* Footer (Logout) */}
+                <div className="sidebar-footer">
+                    <button className="btn-logout" onClick={handleLogout}>
+                        <LogOut size={20} /> Logout
+                    </button>
                 </div>
 
             </div>
+
+            <style jsx>{`
+        /* OVERLAY */
+        .sidebar-overlay {
+          position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+          background: rgba(30, 27, 75, 0.4); /* Dark violet tint */
+          backdrop-filter: blur(2px);
+          z-index: 998;
+          opacity: 0; visibility: hidden; transition: 0.3s;
+        }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+        /* DRAWER */
+        .sidebar-drawer {
+          position: fixed; top: 0; left: 0; height: 100%; width: 280px;
+          background: white; z-index: 999;
+          box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+          transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          display: flex; flex-direction: column;
+          padding: 25px;
+        }
+        .sidebar-drawer.open { transform: translateX(0); }
+
+        /* CONTENT */
+        .sidebar-header {
+          display: flex; justify-content: space-between; align-items: center;
+          margin-bottom: 40px;
+        }
+        .sidebar-brand { margin: 0; font-size: 24px; font-weight: 800; color: var(--text-main); }
+        .btn-close { background: none; border: none; color: var(--text-muted); padding: 5px; }
+
+        .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        
+        .nav-btn {
+          display: flex; align-items: center; gap: 15px;
+          width: 100%; padding: 15px;
+          background: white; border: none; border-radius: 12px;
+          color: var(--text-main); font-weight: 600; font-size: 16px;
+          text-align: left; transition: 0.2s;
+        }
+        .nav-btn:hover { background: #f8f9ff; color: var(--primary); }
+
+        .sidebar-footer { border-top: 1px solid var(--border); padding-top: 20px; }
+        .btn-logout {
+          display: flex; align-items: center; gap: 15px;
+          width: 100%; padding: 15px;
+          background: #fef2f2; color: #dc2626; /* Red for logout */
+          border: none; border-radius: 12px;
+          font-weight: 700; font-size: 16px; transition: 0.2s;
+        }
+        .btn-logout:hover { background: #fee2e2; }
+      `}</style>
         </>
     );
 };
-
-// Helper Component for simple items
-const NavItem = ({ icon, text, active }) => (
-    <div className={`nav-item ${active ? 'active' : ''}`}>
-        <div className="flex-center">
-            {icon}
-            <span>{text}</span>
-        </div>
-    </div>
-);
 
 export default Sidebar;
