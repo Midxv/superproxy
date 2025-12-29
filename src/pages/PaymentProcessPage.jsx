@@ -1,10 +1,14 @@
+// src/pages/PaymentProcessPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Copy, CheckCircle, AlertTriangle, AlertOctagon } from 'lucide-react';
+import Header from '../components/Header';
+import Sidebar from '../components/Sidebar';
 
 const PaymentProcessPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
 
     const { cryptoStr = 'LTC', amount = '10.62' } = location.state || {};
 
@@ -21,7 +25,6 @@ const PaymentProcessPage = () => {
     };
     const currentAddress = addresses[cryptoStr] || addresses.LTC;
 
-    // Timer Logic
     useEffect(() => {
         if (timeLeft <= 0) return;
         const intervalId = setInterval(() => {
@@ -36,7 +39,6 @@ const PaymentProcessPage = () => {
         return `${m}:${s < 10 ? '0' : ''}${s}`;
     };
 
-    // SVG Math
     const radius = 120;
     const circumference = 2 * Math.PI * radius;
     const progressOffset = circumference - (timeLeft / 300) * circumference;
@@ -53,8 +55,10 @@ const PaymentProcessPage = () => {
 
     return (
         <div className="payment-page-container animate-fade-in">
+            <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
+            <Header onOpenSidebar={() => setSidebarOpen(true)} />
 
-            {/* CANCEL CONFIRMATION MODAL */}
+            {/* CANCEL MODAL */}
             {showCancelConfirm && (
                 <div className="modal-overlay animate-pop">
                     <div className="confirm-card">
@@ -76,7 +80,7 @@ const PaymentProcessPage = () => {
                     <p>Please send exactly <strong>${amount}</strong> worth of <strong>{cryptoStr}</strong>.</p>
                 </div>
 
-                {/* TIMER ONLY (No QR) */}
+                {/* TIMER ONLY - NO QR */}
                 <div className="timer-container">
                     <svg className="timer-svg" width="260" height="260" viewBox="0 0 260 260">
                         <circle className="timer-bg" cx="130" cy="130" r={radius} strokeWidth="12" />
@@ -117,11 +121,12 @@ const PaymentProcessPage = () => {
 
             <style jsx>{`
                 .payment-page-container {
-                    min-height: 100vh; display: flex; justify-content: center; align-items: center;
-                    padding: 20px; background: var(--bg-main);
+                    min-height: 100vh;
+                    padding: 0 20px 40px; background: var(--bg-main);
+                    display: flex; flex-direction: column; align-items: center;
                 }
                 .payment-card-authentic {
-                    background: white; width: 100%; max-width: 500px;
+                    background: white; width: 100%; max-width: 500px; margin-top: 20px;
                     padding: 40px; border-radius: 30px; text-align: center;
                     box-shadow: var(--shadow-card); border: 1px solid var(--border);
                 }

@@ -6,7 +6,7 @@ import LoadingScreen from '../components/LoadingScreen';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 
-// --- CRYPTO LOGO SVGS & DATA ---
+// --- CRYPTO LOGOS ---
 const BTCLogo = () => (<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="16" fill="#F7931A"/><path d="M23.189 14.02c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84-1.728-.43-.69 2.766c-.453-.113-.919-.22-1.385-.326l.695-2.783L15.596 6l-.708 2.839c-.376-.086-.746-.17-1.104-.255l.002-.006-2.384-.596-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 3.235c.048.012.11.024.18.047-.058-.014-.119-.029-.17-.042l-1.13 4.533c-.085.212-.3.53-.784.41l-1.257-.313-.892 2.057 2.248.56c.418.105.828.215 1.232.318l-.715 2.872 1.727.43.708-2.84c.472.127.93.245 1.378.357l-.701 2.813 1.728.43.716-2.873c2.948.558 5.164.333 6.097-2.333.752-2.146-.037-3.404-1.597-4.213 1.137-.263 1.992-1.013 2.222-2.563zm-3.985 5.602c-.541 2.172-4.205.998-5.392.703l.962-3.86c1.187.295 5.013 0.877 4.43 3.157zm.541-5.636c-.495 1.985-3.547 0.976-4.535.73l.872-3.5c.988.246 3.913.703 3.663 2.77z" fill="white"/></svg>);
 const ETHLogo = () => (<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="16" fill="#627EEA"/><path d="M16.498 4v8.87l8.127 3.665L16.498 4z" fill="white" fillOpacity=".602"/><path d="M16.498 4L8.372 16.535l8.126-3.665V4z" fill="white"/><path d="M16.498 20.956l8.127-4.713-8.127 3.665v1.048z" fill="white" fillOpacity=".602"/><path d="M16.498 28V20.956l-8.126-4.713L16.498 28z" fill="white"/><path d="M16.498 19.907l8.127-4.713-8.127-3.665v8.378z" fill="white" fillOpacity=".2"/><path d="M8.372 15.194l8.126 4.713V11.53l-8.126 3.664z" fill="white" fillOpacity=".602"/></svg>);
 const LTCLogo = () => (<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="16" fill="#345D9D"/><path d="M23.813 18.496l-1.838.71-2.07 8.29H9.96l4.588-18.364-3.321-1.283 1.167-4.665 4.197 1.621 1.23 4.922 3.749 1.448-1.167 4.666-3.982-1.538-1.748 6.997h6.498l1.735-6.944 2.32.896-1.414 3.245z" fill="white"/></svg>);
@@ -18,7 +18,6 @@ const cryptoOptions = [
     { id: 'LTC', name: 'Litecoin', icon: <LTCLogo />, color: '#345d9d' },
     { id: 'USDT', name: 'Tether', icon: <USDTLogo />, color: '#26a17b' },
 ];
-// ------------------------------------
 
 const OrderPage = () => {
     const navigate = useNavigate();
@@ -131,7 +130,7 @@ const OrderPage = () => {
                                 </div>
                             </MethodItem>
 
-                            {/* Cryptocurrency (NEW MODERN LOOK) */}
+                            {/* Cryptocurrency with SVGs */}
                             <MethodItem
                                 active={selectedMethod === 'crypto'}
                                 onClick={() => setSelectedMethod('crypto')}
@@ -141,7 +140,6 @@ const OrderPage = () => {
                             >
                                 <div className="method-content animate-slide-down">
                                     <p className="label-sm">Select coin:</p>
-                                    {/* MODERN CRYPTO GRID */}
                                     <div className="modern-crypto-grid">
                                         {cryptoOptions.map(coin => (
                                             <div
@@ -218,7 +216,6 @@ const OrderPage = () => {
 
         .method-content { border-top: 1px solid var(--border); padding: 25px; background: #f8f9ff; }
         
-        /* Clean Inputs */
         .card-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .input-group.full { grid-column: span 2; }
         .input-group { position: relative; }
@@ -227,12 +224,11 @@ const OrderPage = () => {
         .secure-input:focus { border-color: var(--primary); background: white; }
         .input-lock { position: absolute; left: 12px; top: 38px; color: var(--text-muted); }
 
-        /* Logos Area */
         .card-logos-row { margin-top: 20px; border-top: 1px solid #e5e7eb; padding-top: 15px; }
         .label-sm { font-size: 12px; font-weight: 600; color: #888; margin-bottom: 12px; display: block; }
         .logos-flex { display: flex; gap: 15px; }
 
-        /* === NEW MODERN CRYPTO GRID CSS === */
+        /* MODERN CRYPTO GRID */
         .modern-crypto-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; }
         .crypto-selection-card {
           background: white; border: 2px solid var(--border); border-radius: 16px;
@@ -255,7 +251,6 @@ const OrderPage = () => {
           align-items: center; justify-content: center; color: white;
           box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
-        /* ================================= */
 
         .summary-card { background: white; padding: 30px; border-radius: 30px; box-shadow: var(--shadow-card); position: sticky; top: 30px; }
         .summary-row { display: flex; justify-content: space-between; margin-bottom: 20px; }
