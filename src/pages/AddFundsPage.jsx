@@ -6,6 +6,11 @@ import LoadingScreen from '../components/LoadingScreen';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 
+// --- UPDATED CLEANER SVGS FOR CARDS ---
+const VisaLogo = () => (<svg xmlns="http://www.w3.org/2000/svg" width="32" height="24" viewBox="0 0 38 24"><path fill="#1434CB" d="M13.4 1.6L8.8 22.3h4.4l4.6-20.7h-4.4zm8.2 0c-1.3 0-2.4.8-2.9 1.9L13.6 22.3h4.6l.7-3.7h5.7l.5 3.7h4.1L25.6 1.6h-4zm.8 13.8l2.1-10c.1-.3.7-1.1 1.3-1.1.1 0 .3 0 .4.1l-1.1 5.4-2.7 5.6zm15.6-14c-.7-.1-1.3-.1-1.9 0-2.1.3-3.6 1.4-4.1 3.6l-3.8 17.3h4.5l.6-2.9c.7 2.5 3.7 3.1 5.5 1.9 3.2-2.1 3.8-6 3.8-6l-3.8.2c.2 3.2-2 4.4-3.7 2.9-1-1.1-1.1-3-1.1-3l6.8-3.2c.8-3.2 0-8.6-2.8-10.8zM30 6.9l-2.7 1.3c.2-1.6 2.1-3.4 3.6-2.9.5.1.8.7.9 1.4 0 .7-.8.4-1.8.2zm-25.8.1l-2-8.5H0l3.1 18.2L9 22.3H3.6l-1.6-8.2c-.1-.3-1-1.7-2-1.9v-.4h4.2c.6 0 1.1.4 1.3 1.1l.4 2.4z"/></svg>);
+const MastercardLogo = () => (<svg viewBox="0 0 48 48" height="24"><g fill="none" fillRule="evenodd"><circle cx="16" cy="24" r="16" fill="#EA001B"/><circle cx="32" cy="24" r="16" fill="#FFA200" fillOpacity=".8"/></g></svg>);
+const DinersLogo = () => (<svg xmlns="http://www.w3.org/2000/svg" width="32" height="24" viewBox="0 0 35 24"><path fill="#0079BE" d="M7.9 24C3.5 24 0 20.5 0 16.1S3.5 8.2 7.9 8.2s7.9 3.5 7.9 7.9c0 4.3-3.5 7.9-7.9 7.9zM20.8 0C16.4 0 12.9 3.5 12.9 7.9s3.5 7.9 7.9 7.9S28.7 12.2 28.7 7.9 25.2 0 20.8 0z"/></svg>);
+
 // --- CRYPTO SVGS ---
 const BTCLogo = () => (<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="16" fill="#F7931A"/><path d="M23.189 14.02c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84-1.728-.43-.69 2.766c-.453-.113-.919-.22-1.385-.326l.695-2.783L15.596 6l-.708 2.839c-.376-.086-.746-.17-1.104-.255l.002-.006-2.384-.596-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 3.235c.048.012.11.024.18.047-.058-.014-.119-.029-.17-.042l-1.13 4.533c-.085.212-.3.53-.784.41l-1.257-.313-.892 2.057 2.248.56c.418.105.828.215 1.232.318l-.715 2.872 1.727.43.708-2.84c.472.127.93.245 1.378.357l-.701 2.813 1.728.43.716-2.873c2.948.558 5.164.333 6.097-2.333.752-2.146-.037-3.404-1.597-4.213 1.137-.263 1.992-1.013 2.222-2.563zm-3.985 5.602c-.541 2.172-4.205.998-5.392.703l.962-3.86c1.187.295 5.013 0.877 4.43 3.157zm.541-5.636c-.495 1.985-3.547 0.976-4.535.73l.872-3.5c.988.246 3.913.703 3.663 2.77z" fill="white"/></svg>);
 const ETHLogo = () => (<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="16" fill="#627EEA"/><path d="M16.498 4v8.87l8.127 3.665L16.498 4z" fill="white" fillOpacity=".602"/><path d="M16.498 4L8.372 16.535l8.126-3.665V4z" fill="white"/><path d="M16.498 20.956l8.127-4.713-8.127 3.665v1.048z" fill="white" fillOpacity=".602"/><path d="M16.498 28V20.956l-8.126-4.713L16.498 28z" fill="white"/><path d="M16.498 19.907l8.127-4.713-8.127-3.665v8.378z" fill="white" fillOpacity=".2"/><path d="M8.372 15.194l8.126 4.713V11.53l-8.126 3.664z" fill="white" fillOpacity=".602"/></svg>);
@@ -26,9 +31,40 @@ const AddFundsPage = () => {
     const [selectedCrypto, setSelectedCrypto] = useState(null);
     const [isSidebarOpen, setSidebarOpen] = useState(false);
 
+    // Form State for Card Validation
+    const [cardForm, setCardForm] = useState({ number: '', expiry: '', cvc: '' });
+    const [formErrors, setFormErrors] = useState({});
+    const [isShaking, setIsShaking] = useState(false);
+
     const [isLoading, setIsLoading] = useState(false);
     const [showErrorToast, setShowErrorToast] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
+
+    // Update form state on input change
+    const handleInputChange = (field, value) => {
+        setCardForm(prev => ({ ...prev, [field]: value }));
+        // Clear error for this field when user types
+        if (formErrors[field]) {
+            setFormErrors(prev => ({ ...prev, [field]: false }));
+        }
+    };
+
+    // Validation Logic
+    const validateCardForm = () => {
+        const errors = {};
+        if (!cardForm.number.trim()) errors.number = true;
+        if (!cardForm.expiry.trim()) errors.expiry = true;
+        if (!cardForm.cvc.trim()) errors.cvc = true;
+        setFormErrors(errors);
+
+        if (Object.keys(errors).length > 0) {
+            setIsShaking(true);
+            setTimeout(() => setIsShaking(false), 300); // Stop shake after animation duration
+            return false;
+        }
+        return true;
+    };
+
 
     const handlePayment = () => {
         // 1. Minimum Limit Check
@@ -37,18 +73,31 @@ const AddFundsPage = () => {
             return;
         }
 
+        // 2. Crypto Success Path
         if (selectedMethod === 'crypto') {
             if (!selectedCrypto) return alert("Please select a cryptocurrency.");
             navigate('/payment-process', { state: { cryptoStr: selectedCrypto.id, amount: amount } });
             return;
         }
 
+        // 3. Card Validation Check
+        if (selectedMethod === 'card') {
+            if (!validateCardForm()) {
+                // Validation failed, shake triggered, stop here.
+                return;
+            }
+        }
+
+        // 4. Fake Loading -> Error for Cards/Alibaba (If validation passed)
         const methodNames = { card: 'Card processing', alibaba: 'Alibaba Pay' };
+        const currentName = methodNames[selectedMethod];
+
         setIsLoading(true);
         setShowErrorToast(false);
+
         setTimeout(() => {
             setIsLoading(false);
-            setErrorMsg(`${methodNames[selectedMethod]} is currently unavailable in your region. Please try Crypto.`);
+            setErrorMsg(`${currentName} is currently unavailable in your region. Please try Crypto.`);
             setShowErrorToast(true);
             setTimeout(() => setShowErrorToast(false), 5000);
         }, 2500);
@@ -61,6 +110,7 @@ const AddFundsPage = () => {
 
             {isLoading && <LoadingScreen />}
 
+            {/* RED ERROR TOAST */}
             {showErrorToast && (
                 <div className="error-overlay animate-pop">
                     <div className="error-toast">
@@ -77,12 +127,14 @@ const AddFundsPage = () => {
             <div className="content-wrapper">
                 <h1 className="page-title">Add Funds</h1>
 
+                {/* SWAPPED LAYOUT: Summary Left, Methods Right */}
                 <div className="layout-grid-swapped">
 
-                    {/* Summary Left */}
+                    {/* === LEFT COLUMN: Amount & Summary === */}
                     <div className="left-summary-section">
                         <div className="summary-card">
                             <h3>Deposit Amount</h3>
+
                             <div className="amount-input-box">
                                 <span className="currency-symbol">$</span>
                                 <input
@@ -93,9 +145,11 @@ const AddFundsPage = () => {
                                 />
                             </div>
 
-                            {/* MINIMUM LIMIT WARNING */}
+                            {/* WARNING MESSAGE IF < $25 */}
                             {parseFloat(amount) < 25 && (
-                                <p className="min-warning">Minimum deposit amount is $25.00</p>
+                                <div className="min-warning">
+                                    <AlertOctagon size={16} /> Minimum deposit amount is $25.00
+                                </div>
                             )}
 
                             <div className="quick-amounts">
@@ -103,22 +157,32 @@ const AddFundsPage = () => {
                                     <div key={val} className="chip" onClick={() => setAmount(val + '.00')}>${val}</div>
                                 ))}
                             </div>
+
                             <div className="divider"></div>
-                            <div className="total-row"><span>Total to Pay</span><span className="price-tag">${amount}</span></div>
+
+                            <div className="total-row">
+                                <span>Total to Pay</span>
+                                <span className="price-tag">${amount}</span>
+                            </div>
+
                             <button className="btn-checkout" onClick={handlePayment}>
                                 {selectedMethod === 'alibaba' ? 'Proceed to Alipay' :
                                     selectedMethod === 'card' ? 'Pay with Card' : 'Add Funds Now'}
                             </button>
-                            <div className="secure-footer"><ShieldCheck size={16} /> Secure 256-bit SSL Payment</div>
+
+                            <div className="secure-footer">
+                                <ShieldCheck size={16} /> Secure 256-bit SSL Payment
+                            </div>
                         </div>
                     </div>
 
-                    {/* Methods Right */}
+                    {/* === RIGHT COLUMN: Payment Selection === */}
                     <div className="right-methods-section">
                         <h3 className="section-header">Select Payment Method</h3>
+
                         <div className="payment-options-stack">
 
-                            {/* Card */}
+                            {/* Card Option (Cleaned & Validated) */}
                             <MethodItem
                                 active={selectedMethod === 'card'}
                                 onClick={() => setSelectedMethod('card')}
@@ -127,32 +191,61 @@ const AddFundsPage = () => {
                             >
                                 <div className="method-expanded-content animate-slide-down">
                                     <div className="card-form-grid">
-                                        <div className="input-group full">
-                                            <label>Card Number</label>
-                                            <input type="text" name="cc-number" autoComplete="cc-number" className="secure-input" />
-                                            <Lock size={16} className="input-lock-icon" />
+
+                                        {/* Card Number Input */}
+                                        <div className={`input-group full ${isShaking && formErrors.number ? 'shake' : ''}`}>
+                                            <label className={formErrors.number ? 'input-error-text' : ''}>Card Number</label>
+                                            <div className="input-wrapper-relative">
+                                                <input
+                                                    type="text"
+                                                    placeholder="4242 4242 4242 4242"
+                                                    className={`secure-input ${formErrors.number ? 'input-error-border' : ''}`}
+                                                    value={cardForm.number}
+                                                    onChange={(e) => handleInputChange('number', e.target.value)}
+                                                />
+                                                <Lock size={16} className={`input-lock-icon ${formErrors.number ? 'input-error-text' : ''}`} />
+                                            </div>
                                         </div>
-                                        <div className="input-group">
-                                            <label>Expiry</label>
-                                            <input type="text" name="cc-exp" autoComplete="cc-exp" className="secure-input" />
+
+                                        {/* Expiry Input */}
+                                        <div className={`input-group ${isShaking && formErrors.expiry ? 'shake' : ''}`}>
+                                            <label className={formErrors.expiry ? 'input-error-text' : ''}>Expiry</label>
+                                            <input
+                                                type="text"
+                                                placeholder="MM / YY"
+                                                className={`secure-input ${formErrors.expiry ? 'input-error-border' : ''}`}
+                                                value={cardForm.expiry}
+                                                onChange={(e) => handleInputChange('expiry', e.target.value)}
+                                            />
                                         </div>
-                                        <div className="input-group">
-                                            <label>CVC</label>
-                                            <input type="text" name="cc-csc" autoComplete="cc-csc" className="secure-input" />
+
+                                        {/* CVC Input */}
+                                        <div className={`input-group ${isShaking && formErrors.cvc ? 'shake' : ''}`}>
+                                            <label className={formErrors.cvc ? 'input-error-text' : ''}>CVC</label>
+                                            <input
+                                                type="text"
+                                                placeholder="123"
+                                                className={`secure-input ${formErrors.cvc ? 'input-error-border' : ''}`}
+                                                value={cardForm.cvc}
+                                                onChange={(e) => handleInputChange('cvc', e.target.value)}
+                                            />
                                         </div>
+
                                     </div>
+
+                                    {/* Logos Below */}
                                     <div className="card-logos-row">
                                         <p className="label-sm">Supported Cards:</p>
                                         <div className="logos-flex">
-                                            <svg viewBox="0 0 48 48" height="24"><path fill="#1A1F71" d="M35.3 16.1h4.9l-3.1 19.1h-4.9l3.1-19.1zM21.5 16.1h5.1l-3.2 19.1h-5.1l3.2-19.1zM15.4 16.1h-5c-.3 0-.6.1-.7.4l-3.7 19.1H11l5.4-13.4 1.1 5.3 1 4.5 1.7 3.6h5.3l-8.1-19.5zM47.7 16.1h-2.9c-.8 0-1.5.3-1.8 1.1l-6.3 15.1-2.2-10.7c-.4-1.5-1.5-2.5-3.1-2.5h-5.2l.3 1.5c1.4.3 2.7 1.1 3.5 2.1l3.1 11.8 5.2 12.3h5.4l8.3-19.5c.3-1.3-.5-1.2-4.3-1.2z"/></svg>
-                                            <svg viewBox="0 0 48 48" height="24"><g fill="none" fillRule="evenodd"><circle cx="16" cy="24" r="16" fill="#EA001B"/><circle cx="32" cy="24" r="16" fill="#FFA200" fillOpacity=".8"/></g></svg>
-                                            <svg viewBox="0 0 48 48" height="24"><path fill="#0079BE" d="M10 24a14 14 0 1 1 28 0 14 14 0 0 1-28 0zm14-10a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/></svg>
+                                            <VisaLogo />
+                                            <MastercardLogo />
+                                            <DinersLogo />
                                         </div>
                                     </div>
                                 </div>
                             </MethodItem>
 
-                            {/* Crypto with SVGs */}
+                            {/* Crypto Option (Rich Grid with SVGs) */}
                             <MethodItem
                                 active={selectedMethod === 'crypto'}
                                 onClick={() => setSelectedMethod('crypto')}
@@ -184,6 +277,7 @@ const AddFundsPage = () => {
                                 </div>
                             </MethodItem>
 
+                            {/* Alibaba Option */}
                             <MethodItem
                                 active={selectedMethod === 'alibaba'}
                                 onClick={() => setSelectedMethod('alibaba')}
@@ -198,14 +292,20 @@ const AddFundsPage = () => {
             </div>
 
             <style jsx>{`
-                .page-container { min-height: 100vh; padding: 0 20px 40px; }
+                .page-container { min-height: 100vh; padding: 0 20px 40px; background: var(--bg-main); }
                 .content-wrapper { max-width: 1000px; margin: 0 auto; }
                 .page-title { font-size: 32px; margin-bottom: 30px; color: var(--text-main); font-weight: 800; }
+
                 .layout-grid-swapped { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; }
+
                 .section-header { margin-bottom: 20px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 13px; letter-spacing: 1px; }
                 .payment-options-stack { display: flex; flex-direction: column; gap: 15px; }
 
-                .method-item { background: white; border: 2px solid var(--border); border-radius: 20px; overflow: hidden; transition: all 0.2s; cursor: pointer; }
+                /* Payment Item Style */
+                .method-item {
+                    background: white; border: 2px solid var(--border); border-radius: 20px;
+                    overflow: hidden; transition: all 0.2s; cursor: pointer;
+                }
                 .method-item.active { border-color: var(--primary); box-shadow: var(--shadow-card); }
                 .method-header { padding: 20px; display: flex; align-items: center; justify-content: space-between; }
                 .method-left { display: flex; align-items: center; gap: 15px; font-weight: 700; }
@@ -213,57 +313,139 @@ const AddFundsPage = () => {
                 .badge-discount { font-size: 12px; background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 12px; font-weight: bold; }
 
                 .method-expanded-content { border-top: 1px solid var(--border); padding: 25px; background: #f8f9ff; }
+
+                /* Form Inputs & Validation Styling */
                 .card-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
                 .input-group.full { grid-column: span 2; }
                 .input-group { position: relative; }
-                .input-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
-                .secure-input { width: 100%; padding: 14px 14px 14px 40px; border: 1px solid var(--border); border-radius: 12px; outline: none; background: white; }
-                .secure-input:focus { border-color: var(--primary); background: white; }
-                .input-lock-icon { position: absolute; left: 12px; top: 38px; color: var(--text-muted); }
+                .input-wrapper-relative { position: relative; }
+                .input-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: color 0.2s; }
+
+                .secure-input {
+                    width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px;
+                    outline: none; font-size: 15px; background: white; transition: all 0.2s;
+                }
+                /* Padding for inputs with icons */
+                .input-group.full .secure-input { padding-left: 40px; }
+                .secure-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
+                .secure-input::placeholder { color: #ccc; }
+                .input-lock-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); transition: color 0.2s; }
+
+                /* Validation Error Classes */
+                .input-error-border { border-color: #ef4444 !important; background: #fff5f5; }
+                .input-error-text { color: #ef4444 !important; }
+
+                /* Shake Animation */
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    20%, 60% { transform: translateX(-5px); }
+                    40%, 80% { transform: translateX(5px); }
+                }
+                .shake { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
+
+                /* Logos Row */
                 .card-logos-row { margin-top: 20px; border-top: 1px solid #e5e7eb; padding-top: 15px; }
                 .label-sm { font-size: 12px; font-weight: 600; color: #888; margin-bottom: 12px; display: block; }
-                .logos-flex { display: flex; gap: 15px; }
+                .logos-flex { display: flex; gap: 15px; align-items: center; }
 
+                /* Crypto Grid */
                 .modern-crypto-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; }
-                .crypto-selection-card { background: white; border: 2px solid var(--border); border-radius: 16px; padding: 15px; display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; transition: all 0.2s ease; position: relative; }
+                .crypto-selection-card {
+                    background: white; border: 2px solid var(--border); border-radius: 16px;
+                    padding: 15px; display: flex; flex-direction: column; align-items: center; text-align: center;
+                    cursor: pointer; transition: all 0.2s ease; position: relative;
+                }
                 .crypto-selection-card:hover { border-color: #d1d5db; transform: translateY(-2px); }
-                .crypto-selection-card.active { border-color: var(--highlight-color); background: #fff; box-shadow: 0 8px 20px -5px var(--highlight-color-soft, rgba(0,0,0,0.1)); }
+                .crypto-selection-card.active {
+                    border-color: var(--highlight-color); background: #fff;
+                    box-shadow: 0 8px 20px -5px var(--highlight-color-soft, rgba(0,0,0,0.1));
+                }
                 .coin-logo-container { margin-bottom: 10px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); transition: 0.2s; }
                 .crypto-selection-card.active .coin-logo-container { transform: scale(1.1); }
                 .coin-info { display: flex; flex-direction: column; }
                 .coin-name { font-weight: 700; font-size: 14px; color: var(--text-main); }
                 .coin-ticker { font-size: 12px; color: var(--text-muted); font-weight: 600; }
-                .active-check { position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; background: var(--highlight-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+                .active-check {
+                    position: absolute; top: 10px; right: 10px; width: 24px; height: 24px;
+                    background: var(--highlight-color); border-radius: 50%; display: flex;
+                    align-items: center; justify-content: center; color: white;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+                }
 
-                .summary-card { background: white; padding: 30px; border-radius: 30px; box-shadow: var(--shadow-hover); border: 1px solid white; position: sticky; top: 30px; }
-                .amount-input-box { display: flex; align-items: center; background: #f8f9ff; border: 2px solid var(--border); border-radius: 16px; padding: 10px 20px; margin-bottom: 10px; }
+                /* Summary Card */
+                .summary-card {
+                    background: white; padding: 30px; border-radius: 30px;
+                    box-shadow: var(--shadow-hover); border: 1px solid white; position: sticky; top: 30px;
+                }
+                .amount-input-box {
+                    display: flex; align-items: center; background: #f8f9ff;
+                    border: 2px solid var(--border); border-radius: 16px; padding: 10px 20px;
+                    margin-bottom: 15px;
+                }
                 .currency-symbol { font-size: 32px; font-weight: 700; color: var(--text-main); }
-                .big-amount-input { width: 100%; border: none; background: transparent; outline: none; font-size: 36px; font-weight: 800; color: var(--primary); margin-left: 5px; }
-                .min-warning { color: #ef4444; font-size: 13px; font-weight: 700; margin-bottom: 15px; }
+                .big-amount-input {
+                    width: 100%; border: none; background: transparent; outline: none;
+                    font-size: 36px; font-weight: 800; color: var(--primary); margin-left: 5px;
+                }
+
+                .min-warning { color: #ef4444; font-size: 13px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 6px; }
+
                 .quick-amounts { display: flex; gap: 10px; margin-bottom: 25px; }
-                .chip { padding: 8px 16px; background: white; border: 1px solid var(--border); border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+                .chip {
+                    padding: 8px 16px; background: white; border: 1px solid var(--border);
+                    border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s;
+                }
                 .chip:hover { border-color: var(--primary); color: var(--primary); }
+
                 .divider { height: 1px; background: var(--border); margin: 25px 0; }
                 .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
                 .price-tag { font-size: 32px; font-weight: 800; color: var(--primary); }
-                .btn-checkout { width: 100%; padding: 18px; border: none; border-radius: 16px; background: var(--primary); color: white; font-weight: 700; font-size: 18px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); }
-                .btn-checkout:hover { background: var(--primary-hover); transform: translateY(-2px); }
-                .secure-footer { margin-top: 20px; display: flex; justify-content: center; gap: 8px; color: var(--text-muted); font-size: 13px; }
 
-                .error-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); z-index: 9999; backdrop-filter: blur(4px); }
-                .error-toast { background: white; width: 90%; max-width: 400px; padding: 30px; border-radius: 24px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 20px 60px rgba(220, 38, 38, 0.2); position: relative; animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
-                .error-icon-box { width: 70px; height: 70px; background: #ef4444; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4); }
+                .btn-checkout {
+                    width: 100%; padding: 18px; border: none; border-radius: 16px;
+                    background: var(--primary); color: white; font-weight: 700; font-size: 18px;
+                    cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+                }
+                .btn-checkout:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+                .secure-footer { margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; }
+
+                /* TOAST */
+                .error-overlay {
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    display: flex; justify-content: center; align-items: center;
+                    background: rgba(0,0,0,0.4); z-index: 9999; backdrop-filter: blur(4px);
+                }
+                .error-toast {
+                    background: white; width: 90%; max-width: 400px;
+                    padding: 30px; border-radius: 24px;
+                    display: flex; flex-direction: column; align-items: center; text-align: center;
+                    box-shadow: 0 20px 60px rgba(220, 38, 38, 0.2); position: relative;
+                    animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+                }
+                .error-icon-box {
+                    width: 70px; height: 70px; background: #ef4444; border-radius: 50%;
+                    display: flex; justify-content: center; align-items: center;
+                    margin-bottom: 20px; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4);
+                }
                 .error-content h3 { font-size: 22px; color: #111; margin-bottom: 10px; }
                 .error-content p { color: #666; font-size: 15px; line-height: 1.5; }
-                .close-toast { position: absolute; top: 15px; right: 15px; background: #f3f4f6; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555; }
+                .close-toast {
+                    position: absolute; top: 15px; right: 15px; background: #f3f4f6;
+                    border: none; width: 32px; height: 32px; border-radius: 50%;
+                    display: flex; align-items: center; justify-content: center;
+                    cursor: pointer; color: #555;
+                }
 
                 .icon-violet { color: var(--primary); } .icon-gold { color: #f59e0b; } .icon-orange { color: #f97316; }
                 .animate-fade-in { animation: fadeIn 0.5s ease-out; }
                 .animate-slide-down { animation: slideDown 0.3s ease-out; }
                 .animate-pop { animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+
                 @keyframes fadeIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); }}
                 @keyframes slideDown { from { opacity:0; transform: translateY(-10px); height: 0; } to { opacity:1; transform: translateY(0); height: auto; }}
                 @keyframes popUp { from { opacity:0; transform: scale(0.8); } to { opacity:1; transform: scale(1); }}
+
                 @media (max-width: 900px) { .layout-grid-swapped { grid-template-columns: 1fr; } .summary-card { position: static; } }
             `}</style>
         </div>
@@ -281,6 +463,7 @@ const MethodItem = ({ active, onClick, icon, title, logos, badge, children }) =>
             </div>
             <div className="method-right flex gap-2 items-center">
                 {badge && <span className="badge-discount">{badge}</span>}
+                <ChevronDown size={20} className={`transform transition ${active?'rotate-180':''}`} />
             </div>
         </div>
         {active && children}
