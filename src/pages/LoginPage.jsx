@@ -1,8 +1,8 @@
 // src/pages/LoginPage.jsx
 import React, { useState } from 'react';
-import { auth, googleProvider, db } from '../firebaseConfig';
+import { auth, googleProvider, db } from '../firebaseConfig'; // Import DB
 import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, getDoc, setDoc, collection, addDoc } from 'firebase/firestore'; // Added collection, addDoc
+import { doc, getDoc, setDoc, collection, addDoc } from 'firebase/firestore'; // Import Firestore functions
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 
@@ -111,7 +111,9 @@ const LoginPage = () => {
                                 </button>
                             </div>
                         </div>
-                        {!isRegistering && <div className="forgot-link"><span>Forgot password?</span></div>}
+
+                        {/* Forgot Password Link Removed Here */}
+
                         <button type="submit" className="btn-submit">{isRegistering ? 'Sign Up' : 'Log In'}</button>
                     </form>
 
@@ -142,8 +144,6 @@ const LoginPage = () => {
                 .modern-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1); }
                 .password-wrapper { position: relative; }
                 .eye-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 0; cursor: pointer; }
-                .forgot-link { text-align: right; margin-top: -10px; }
-                .forgot-link span { font-size: 14px; color: var(--primary); font-weight: 700; cursor: pointer; }
                 .btn-submit { width: 100%; padding: 18px; background: var(--primary); color: white; font-size: 18px; font-weight: 800; border: none; border-radius: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 8px 20px rgba(124, 58, 237, 0.25); }
                 .btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 12px 25px rgba(124, 58, 237, 0.35); }
                 .divider { display: flex; align-items: center; margin: 30px 0 20px 0; color: #aaa; font-size: 12px; font-weight: 700; letter-spacing: 1px; }
