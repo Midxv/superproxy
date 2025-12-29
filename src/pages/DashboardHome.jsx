@@ -1,8 +1,7 @@
-// src/pages/DashboardHome.jsx
 import React, { useState } from 'react';
 import { Plus, Globe, Server, Smartphone, Shield, Star, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar'; // Import the new Sidebar
+import Sidebar from '../components/Sidebar';
 
 const DashboardHome = () => {
     const navigate = useNavigate();
@@ -11,46 +10,43 @@ const DashboardHome = () => {
     return (
         <div className="dashboard-container">
 
-            {/* THE SIDEBAR COMPONENT */}
+            {/* Slide-out Sidebar */}
             <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-            {/* 1. HEADER AREA */}
-            <div className="top-header-area">
+            {/* 1. TOP HEADER & BALANCE SECTION */}
+            <div className="hero-section">
 
-                {/* HAMBURGER BUTTON */}
-                <button className="menu-btn" onClick={() => setSidebarOpen(true)}>
-                    <Menu size={28} color="#1e1b4b" />
-                </button>
+                {/* Navigation Bar */}
+                <div className="top-nav">
+                    <button className="menu-btn" onClick={() => setSidebarOpen(true)}>
+                        <Menu size={28} color="#1e1b4b" />
+                    </button>
+                </div>
 
-                {/* LOGO */}
-                <h1 className="brand-title-small">
+                {/* Big Brand Logo */}
+                <h1 className="brand-title">
                     Super<span style={{ color: 'var(--primary)' }}>Proxy</span>
                 </h1>
 
-                {/* Spacer to center logo properly */}
-                <div style={{width: '28px'}}></div>
-            </div>
-
-            {/* BALANCE CARD (Centered) */}
-            <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-                <div className="balance-card">
+                {/* Balance Card */}
+                <div className="balance-card animate-pop">
                     <p className="balance-label">Available Balance</p>
                     <h2 className="balance-value">$0.00</h2>
 
                     <button
                         className="btn-add-funds"
-                        onClick={() => navigate('/order')}
+                        onClick={() => navigate('/add-funds')} // Goes to Add Funds Page
                     >
                         <Plus size={18} strokeWidth={3} /> Add Funds
                     </button>
                 </div>
+
             </div>
 
-            {/* 2. PRODUCT CARDS (Grid) */}
+            {/* 2. PRODUCTS GRID */}
             <div className="products-grid">
-
                 <ProductCard
-                    icon={<Globe size={32} color="#3b82f6" />}
+                    icon={<Globe size={32} className="icon-blue" />}
                     title="Residential"
                     price="$1.75 / GB"
                     desc="Ethical IPs for scraping & unblocking."
@@ -58,7 +54,7 @@ const DashboardHome = () => {
                 />
 
                 <ProductCard
-                    icon={<Server size={32} color="#ef4444" />}
+                    icon={<Server size={32} className="icon-red" />}
                     title="ISP Proxies"
                     price="$2.40 / IP"
                     desc="High speed static IPs for accounts."
@@ -66,7 +62,7 @@ const DashboardHome = () => {
                 />
 
                 <ProductCard
-                    icon={<Shield size={32} color="#8b5cf6" />}
+                    icon={<Shield size={32} className="icon-violet" />}
                     title="Datacenter"
                     price="$1.39 / IP"
                     desc="99.9% Uptime with 10Gbps speeds."
@@ -74,20 +70,19 @@ const DashboardHome = () => {
                 />
 
                 <ProductCard
-                    icon={<Smartphone size={32} color="#f97316" />}
+                    icon={<Smartphone size={32} className="icon-orange" />}
                     title="Mobile 4G/5G"
                     price="$10.00 / Mo"
                     desc="Real carrier networks for verification."
                     onClick={() => navigate('/order')}
                 />
-
             </div>
 
             {/* 3. REVIEWS */}
             <div className="reviews-section">
                 <div className="reviews-header">
                     <Star fill="#00b67a" stroke="none" size={28} />
-                    <h3 style={{ fontSize: '24px', margin: 0, fontWeight: 'bold' }}>Trustpilot Reviews</h3>
+                    <h3 style={{ fontSize: '24px', margin: 0, fontWeight: '800' }}>Trustpilot Reviews</h3>
                 </div>
 
                 <div className="reviews-grid">
@@ -99,35 +94,26 @@ const DashboardHome = () => {
             </div>
 
             <style jsx>{`
-        /* Header Layout */
-        .top-header-area {
-          display: flex; justify-content: space-between; align-items: center;
-          margin-bottom: 40px; position: relative;
-        }
-        
+        .hero-section { text-align: center; margin-bottom: 50px; position: relative; }
+        .top-nav { position: absolute; top: 0; left: 0; }
         .menu-btn {
-          background: white; border: 1px solid var(--border);
-          padding: 10px; border-radius: 12px; cursor: pointer;
-          transition: 0.2s; display: flex; align-items: center; justify-content: center;
+          background: white; border: 1px solid var(--border); padding: 10px;
+          border-radius: 12px; cursor: pointer; transition: 0.2s;
           box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
         .menu-btn:hover { transform: scale(1.05); background: #f8f9ff; }
-
-        .brand-title-small {
-          font-size: 32px; font-weight: 900; letter-spacing: -1px; margin: 0; color: #1e1b4b;
-        }
-
-        /* Adjust Balance Card Spacing */
-        .balance-card { margin-top: 20px; }
+        
+        .icon-blue { color: #3b82f6; } .icon-red { color: #ef4444; }
+        .icon-violet { color: #8b5cf6; } .icon-orange { color: #f97316; }
       `}</style>
         </div>
     );
 };
 
-// --- SUB-COMPONENTS (Same as before) ---
+// Sub-Components
 const ProductCard = ({ icon, title, price, desc, onClick }) => (
     <div className="product-card" onClick={onClick}>
-        <div style={{ background: '#f3f4f6', width: 'fit-content', padding: '12px', borderRadius: '12px', marginBottom: '15px' }}>
+        <div style={{ background: '#f3f4f6', width: 'fit-content', padding: '12px', borderRadius: '14px', marginBottom: '15px' }}>
             {icon}
         </div>
         <h3>{title}</h3>
