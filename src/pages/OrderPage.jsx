@@ -1,5 +1,4 @@
 // src/pages/OrderPage.jsx
-// ... (Imports remain the same)
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { CreditCard, Bitcoin, ShieldCheck, Globe, Lock, ChevronDown, AlertOctagon, X, Check } from 'lucide-react';
@@ -7,7 +6,7 @@ import LoadingScreen from '../components/LoadingScreen';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 
-// ... (Keep Crypto Logos & Options consts here) ...
+// --- SAME SVGS & CRYPTO DATA ---
 const BTCLogo = () => (<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="16" fill="#F7931A"/><path d="M23.189 14.02c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84-1.728-.43-.69 2.766c-.453-.113-.919-.22-1.385-.326l.695-2.783L15.596 6l-.708 2.839c-.376-.086-.746-.17-1.104-.255l.002-.006-2.384-.596-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 3.235c.048.012.11.024.18.047-.058-.014-.119-.029-.17-.042l-1.13 4.533c-.085.212-.3.53-.784.41l-1.257-.313-.892 2.057 2.248.56c.418.105.828.215 1.232.318l-.715 2.872 1.727.43.708-2.84c.472.127.93.245 1.378.357l-.701 2.813 1.728.43.716-2.873c2.948.558 5.164.333 6.097-2.333.752-2.146-.037-3.404-1.597-4.213 1.137-.263 1.992-1.013 2.222-2.563zm-3.985 5.602c-.541 2.172-4.205.998-5.392.703l.962-3.86c1.187.295 5.013 0.877 4.43 3.157zm.541-5.636c-.495 1.985-3.547 0.976-4.535.73l.872-3.5c.988.246 3.913.703 3.663 2.77z" fill="white"/></svg>);
 const ETHLogo = () => (<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="16" fill="#627EEA"/><path d="M16.498 4v8.87l8.127 3.665L16.498 4z" fill="white" fillOpacity=".602"/><path d="M16.498 4L8.372 16.535l8.126-3.665V4z" fill="white"/><path d="M16.498 20.956l8.127-4.713-8.127 3.665v1.048z" fill="white" fillOpacity=".602"/><path d="M16.498 28V20.956l-8.126-4.713L16.498 28z" fill="white"/><path d="M16.498 19.907l8.127-4.713-8.127-3.665v8.378z" fill="white" fillOpacity=".2"/><path d="M8.372 15.194l8.126 4.713V11.53l-8.126 3.664z" fill="white" fillOpacity=".602"/></svg>);
 const LTCLogo = () => (<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="16" fill="#345D9D"/><path d="M23.813 18.496l-1.838.71-2.07 8.29H9.96l4.588-18.364-3.321-1.283 1.167-4.665 4.197 1.621 1.23 4.922 3.749 1.448-1.167 4.666-3.982-1.538-1.748 6.997h6.498l1.735-6.944 2.32.896-1.414 3.245z" fill="white"/></svg>);
@@ -27,7 +26,6 @@ const OrderPage = () => {
 
     const productType = location.state?.product || 'Residential';
 
-    // ... (Pricing Logic remains same) ...
     const pricingMap = {
         'Residential': { base: 10.62, unit: 'GB' },
         'ISP': { base: 2.40, unit: 'IP' },
@@ -41,6 +39,11 @@ const OrderPage = () => {
     const [plan, setPlan] = useState('1 Unit');
     const [calculatedPrice, setCalculatedPrice] = useState(currentPricing.base.toFixed(2));
 
+    // Validation State
+    const [cardForm, setCardForm] = useState({ number: '', expiry: '', cvc: '' });
+    const [formErrors, setFormErrors] = useState({});
+    const [isShaking, setIsShaking] = useState(false);
+
     useEffect(() => {
         let multiplier = 1;
         if (plan === '7 Units') multiplier = 7;
@@ -52,18 +55,70 @@ const OrderPage = () => {
     const [showErrorToast, setShowErrorToast] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
 
+    const handleInputChange = (field, value) => {
+        if (field === 'expiry' && value.length === 2 && cardForm.expiry.length === 1) {
+            value += '/';
+        }
+        setCardForm(prev => ({ ...prev, [field]: value }));
+        if (formErrors[field]) {
+            setFormErrors(prev => ({ ...prev, [field]: false }));
+        }
+    };
+
+    const validateCardForm = () => {
+        const errors = {};
+        const cleanNum = cardForm.number.replace(/\s/g, '');
+
+        // Check 1: Length 16 & Starts with 4, 5, 9
+        const startsWithValid = ['4', '5', '9'].includes(cleanNum.charAt(0));
+        if (cleanNum.length !== 16 || !startsWithValid || isNaN(cleanNum)) {
+            errors.number = true;
+        }
+
+        // Check 2: Expiry (MM 1-12, YY 26-32)
+        if (!cardForm.expiry.includes('/')) {
+            errors.expiry = true;
+        } else {
+            const [mm, yy] = cardForm.expiry.split('/');
+            const month = parseInt(mm, 10);
+            const year = parseInt(yy, 10);
+
+            if (isNaN(month) || month < 1 || month > 12) errors.expiry = true;
+            if (isNaN(year) || year < 26 || year > 32) errors.expiry = true;
+        }
+
+        // Check 3: CVC
+        if (cardForm.cvc.length < 3 || isNaN(cardForm.cvc)) {
+            errors.cvc = true;
+        }
+
+        setFormErrors(errors);
+
+        if (Object.keys(errors).length > 0) {
+            setIsShaking(true);
+            setTimeout(() => setIsShaking(false), 300);
+            return false;
+        }
+        return true;
+    };
+
     const handleCheckout = () => {
         if (selectedMethod === 'crypto') {
             if (!selectedCrypto) return alert("Select a cryptocurrency.");
             navigate('/payment-process', { state: { cryptoStr: selectedCrypto.id, amount: calculatedPrice } });
             return;
         }
+
+        if (selectedMethod === 'card') {
+            if (!validateCardForm()) return; // Stop if invalid
+        }
+
         const methodNames = { card: 'Card processing', alibaba: 'Alibaba Pay' };
         setIsLoading(true);
         setShowErrorToast(false);
         setTimeout(() => {
             setIsLoading(false);
-            setErrorMsg(`${methodNames[selectedMethod]} is currently unavailable in your region. Please try Crypto.`);
+            setErrorMsg("Transaction declined please try again");
             setShowErrorToast(true);
             setTimeout(() => setShowErrorToast(false), 5000);
         }, 2500);
@@ -97,7 +152,7 @@ const OrderPage = () => {
                         <h3 className="section-header">Select Payment Method</h3>
                         <div className="payment-options-stack">
 
-                            {/* CARDS SECTION - UPDATED */}
+                            {/* Card - Strict Check */}
                             <MethodItem
                                 active={selectedMethod === 'card'}
                                 onClick={() => setSelectedMethod('card')}
@@ -106,33 +161,57 @@ const OrderPage = () => {
                             >
                                 <div className="method-content animate-slide-down">
                                     <div className="card-form-grid">
-                                        <div className="input-group full">
-                                            <label>Card Number</label>
-                                            <input type="text" name="cc-number" autoComplete="cc-number" placeholder="4242 4242 4242 4242" className="secure-input" />
-                                            <Lock size={16} className="input-lock" />
-                                        </div>
-                                        <div className="input-group">
-                                            <label>Expiry</label>
-                                            <input type="text" name="cc-exp" autoComplete="cc-exp" placeholder="MM / YY" className="secure-input" />
-                                        </div>
-                                        <div className="input-group">
-                                            <label>CVC</label>
-                                            <input type="text" name="cc-csc" autoComplete="cc-csc" placeholder="123" className="secure-input" />
-                                        </div>
-                                    </div>
 
-                                    <div className="card-logos-row">
-                                        <p className="label-sm">Supported Cards:</p>
-                                        <div className="logos-flex">
-                                            <svg viewBox="0 0 48 48" height="24"><path fill="#1A1F71" d="M35.3 16.1h4.9l-3.1 19.1h-4.9l3.1-19.1zM21.5 16.1h5.1l-3.2 19.1h-5.1l3.2-19.1zM15.4 16.1h-5c-.3 0-.6.1-.7.4l-3.7 19.1H11l5.4-13.4 1.1 5.3 1 4.5 1.7 3.6h5.3l-8.1-19.5zM47.7 16.1h-2.9c-.8 0-1.5.3-1.8 1.1l-6.3 15.1-2.2-10.7c-.4-1.5-1.5-2.5-3.1-2.5h-5.2l.3 1.5c1.4.3 2.7 1.1 3.5 2.1l3.1 11.8 5.2 12.3h5.4l8.3-19.5c.3-1.3-.5-1.2-4.3-1.2z"/></svg>
-                                            <svg viewBox="0 0 48 48" height="24"><g fill="none" fillRule="evenodd"><circle cx="16" cy="24" r="16" fill="#EA001B"/><circle cx="32" cy="24" r="16" fill="#FFA200" fillOpacity=".8"/></g></svg>
-                                            <svg viewBox="0 0 48 48" height="24"><path fill="#0079BE" d="M10 24a14 14 0 1 1 28 0 14 14 0 0 1-28 0zm14-10a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/></svg>
+                                        {/* Number */}
+                                        <div className={`input-group full ${isShaking && formErrors.number ? 'shake' : ''}`}>
+                                            <label className={formErrors.number ? 'text-red-500' : ''}>
+                                                {formErrors.number ? 'Wrong number' : 'Card Number'}
+                                            </label>
+                                            <div className="input-wrapper-relative">
+                                                <input
+                                                    type="text"
+                                                    placeholder="0000 0000 0000 0000"
+                                                    className={`secure-input ${formErrors.number ? 'input-error-border' : ''}`}
+                                                    value={cardForm.number}
+                                                    onChange={(e) => handleInputChange('number', e.target.value)}
+                                                    maxLength={19}
+                                                />
+                                                <Lock size={16} className="input-lock-icon" />
+                                            </div>
                                         </div>
+
+                                        {/* Expiry */}
+                                        <div className={`input-group ${isShaking && formErrors.expiry ? 'shake' : ''}`}>
+                                            <label className={formErrors.expiry ? 'text-red-500' : ''}>Expiry</label>
+                                            <input
+                                                type="text"
+                                                placeholder="MM/YY"
+                                                className={`secure-input ${formErrors.expiry ? 'input-error-border' : ''}`}
+                                                value={cardForm.expiry}
+                                                onChange={(e) => handleInputChange('expiry', e.target.value)}
+                                                maxLength={5}
+                                            />
+                                        </div>
+
+                                        {/* CVC */}
+                                        <div className={`input-group ${isShaking && formErrors.cvc ? 'shake' : ''}`}>
+                                            <label className={formErrors.cvc ? 'text-red-500' : ''}>CVC</label>
+                                            <input
+                                                type="text"
+                                                placeholder="123"
+                                                className={`secure-input ${formErrors.cvc ? 'input-error-border' : ''}`}
+                                                value={cardForm.cvc}
+                                                onChange={(e) => handleInputChange('cvc', e.target.value)}
+                                                maxLength={4}
+                                            />
+                                        </div>
+
                                     </div>
+                                    {/* Removed Logos Section */}
                                 </div>
                             </MethodItem>
 
-                            {/* CRYPTO SECTION */}
+                            {/* Crypto */}
                             <MethodItem
                                 active={selectedMethod === 'crypto'}
                                 onClick={() => setSelectedMethod('crypto')}
@@ -203,7 +282,6 @@ const OrderPage = () => {
             </div>
 
             <style jsx>{`
-                /* ... (Keeping Styles Consistent - Added Placeholder Color) ... */
                 .page-container { min-height: 100vh; padding: 0 20px 40px; }
                 .content-wrapper { max-width: 1000px; margin: 0 auto; }
                 .page-title { font-size: 32px; font-weight: 800; margin-bottom: 30px; margin-top: 10px; }
@@ -221,11 +299,23 @@ const OrderPage = () => {
                 .card-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
                 .input-group.full { grid-column: span 2; }
                 .input-group { position: relative; }
-                .input-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
-                .secure-input { width: 100%; padding: 14px 14px 14px 40px; border: 1px solid var(--border); border-radius: 12px; outline: none; background: white; }
-                .secure-input:focus { border-color: var(--primary); background: white; }
+                .input-wrapper-relative { position: relative; }
+                .input-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: color 0.2s; }
+                .text-red-500 { color: #ef4444 !important; }
+
+                .secure-input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; outline: none; font-size: 15px; background: white; transition: all 0.2s; }
+                .input-group.full .secure-input { padding-left: 40px; }
+                .secure-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
                 .secure-input::placeholder { color: #ccc; }
-                .input-lock { position: absolute; left: 12px; top: 38px; color: var(--text-muted); }
+                .input-lock-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+
+                .input-error-border { border-color: #ef4444 !important; background: #fff5f5; }
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    20%, 60% { transform: translateX(-5px); }
+                    40%, 80% { transform: translateX(5px); }
+                }
+                .shake { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
 
                 .card-logos-row { margin-top: 20px; border-top: 1px solid #e5e7eb; padding-top: 15px; }
                 .label-sm { font-size: 12px; font-weight: 600; color: #888; margin-bottom: 12px; display: block; }
@@ -247,7 +337,7 @@ const OrderPage = () => {
                 .plan-select { padding: 8px; border-radius: 8px; border: 1px solid var(--border); font-weight: 600; }
                 .total-row { display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: 700; margin-bottom: 25px; }
                 .price-tag { font-size: 32px; color: var(--primary); }
-                .btn-checkout { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 16px; font-weight: 700; font-size: 18px; cursor: pointer; transition: 0.2s; }
+                .btn-checkout { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 16px; font-weight: 700; font-size: 18px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); }
                 .btn-checkout:hover { background: var(--primary-hover); transform: translateY(-2px); }
                 .secure-footer { margin-top: 20px; display: flex; justify-content: center; gap: 8px; color: var(--text-muted); font-size: 13px; }
 
