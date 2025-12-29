@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreditCard, Bitcoin, ShieldCheck, Lock, AlertOctagon, X } from 'lucide-react';
-import LoadingScreen from '../components/LoadingScreen'; // Re-use your loader
+import LoadingScreen from '../components/LoadingScreen';
 
 // Crypto Options Data
 const cryptoOptions = [
@@ -14,50 +14,46 @@ const cryptoOptions = [
 
 const AddFundsPage = () => {
     const navigate = useNavigate();
-    const [amount, setAmount] = useState('50.00'); // Default amount
+    const [amount, setAmount] = useState('50.00');
     const [selectedMethod, setSelectedMethod] = useState('card');
     const [selectedCrypto, setSelectedCrypto] = useState(null);
 
-    // States for the Alibaba "Fake Process"
+    // Fake Processing States
     const [isLoading, setIsLoading] = useState(false);
     const [showErrorToast, setShowErrorToast] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
 
     const handlePayment = () => {
-        if (selectedMethod === 'alibaba') {
-            // 1. Start Loading
-            setIsLoading(true);
-            setShowErrorToast(false);
-
-            // 2. Wait 2 seconds (simulate check), then show error
-            setTimeout(() => {
-                setIsLoading(false);
-                setShowErrorToast(true);
-                // Auto-hide toast after 5 seconds if they don't close it
-                setTimeout(() => setShowErrorToast(false), 5000);
-            }, 2000);
-            return;
-        }
-
+        // 1. Handle Crypto (The only one that works)
         if (selectedMethod === 'crypto') {
-            if (!selectedCrypto) {
-                alert("Please select a cryptocurrency.");
-                return;
-            }
+            if (!selectedCrypto) return alert("Please select a cryptocurrency.");
             navigate('/payment-process', { state: { cryptoStr: selectedCrypto, amount: amount } });
             return;
         }
 
-        // Card Logic
-        alert(`Processing Card Payment for $${amount}...`);
+        // 2. Handle Cards & Alibaba (Fake Loading -> Error)
+        const methodNames = { card: 'Card processing', alibaba: 'Alibaba Pay' };
+        const currentName = methodNames[selectedMethod];
+
+        setIsLoading(true);
+        setShowErrorToast(false);
+
+        // Simulate 2.5s processing time
+        setTimeout(() => {
+            setIsLoading(false);
+            setErrorMsg(`${currentName} is currently unavailable in your region. Please try Crypto.`);
+            setShowErrorToast(true);
+            setTimeout(() => setShowErrorToast(false), 5000);
+        }, 2500);
     };
 
     return (
         <div className="page-container animate-fade-in">
 
-            {/* LOCAL LOADER (Only shows when paying) */}
+            {/* LOCAL LOADER */}
             {isLoading && <LoadingScreen />}
 
-            {/* ERROR TOAST (Big Red Box) */}
+            {/* ERROR TOAST */}
             {showErrorToast && (
                 <div className="error-overlay animate-pop">
                     <div className="error-toast">
@@ -65,8 +61,8 @@ const AddFundsPage = () => {
                             <AlertOctagon size={40} color="white" />
                         </div>
                         <div className="error-content">
-                            <h3>Payment Failed</h3>
-                            <p>Alibaba Pay is not available in your region. Please use a different method.</p>
+                            <h3>Transaction Failed</h3>
+                            <p>{errorMsg}</p>
                         </div>
                         <button className="close-toast" onClick={() => setShowErrorToast(false)}>
                             <X size={20} />
@@ -78,10 +74,50 @@ const AddFundsPage = () => {
             <div className="content-wrapper">
                 <h1 className="page-title">Add Funds</h1>
 
-                <div className="layout-grid">
+                {/* SWAPPED LAYOUT: Summary First, Methods Second */}
+                <div className="layout-grid-swapped">
 
-                    {/* === LEFT: Payment Selection === */}
-                    <div className="left-section">
+                    {/* === LEFT COLUMN: Amount & Summary === */}
+                    <div className="left-summary-section">
+                        <div className="summary-card">
+                            <h3>Deposit Amount</h3>
+
+                            <div className="amount-input-box">
+                                <span className="currency-symbol">$</span>
+                                <input
+                                    type="number"
+                                    value={amount}
+                                    onChange={(e) => setAmount(e.target.value)}
+                                    className="big-amount-input"
+                                />
+                            </div>
+
+                            <div className="quick-amounts">
+                                {['25', '50', '100', '500'].map(val => (
+                                    <div key={val} className="chip" onClick={() => setAmount(val + '.00')}>${val}</div>
+                                ))}
+                            </div>
+
+                            <div className="divider"></div>
+
+                            <div className="total-row">
+                                <span>Total to Pay</span>
+                                <span className="price-tag">${amount}</span>
+                            </div>
+
+                            <button className="btn-checkout" onClick={handlePayment}>
+                                {selectedMethod === 'alibaba' ? 'Proceed to Alipay' :
+                                    selectedMethod === 'card' ? 'Pay with Card' : 'Add Funds Now'}
+                            </button>
+
+                            <div className="secure-footer">
+                                <ShieldCheck size={16} /> Secure 256-bit SSL Payment
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* === RIGHT COLUMN: Payment Selection === */}
+                    <div className="right-methods-section">
                         <h3 className="section-header">Select Payment Method</h3>
 
                         <div className="payment-options-stack">
@@ -94,7 +130,6 @@ const AddFundsPage = () => {
                                 title="Credit / Debit Card"
                                 logos={['VISA', 'MC', 'AMEX']}
                             >
-                                {/* Browser Autofill Form */}
                                 <div className="method-expanded-content animate-slide-down">
                                     <div className="card-form-grid">
                                         <div className="input-group full">
@@ -140,7 +175,7 @@ const AddFundsPage = () => {
                                 </div>
                             </PaymentMethodItem>
 
-                            {/* Alibaba (The Trigger) */}
+                            {/* Alibaba */}
                             <PaymentMethodItem
                                 active={selectedMethod === 'alibaba'}
                                 onClick={() => setSelectedMethod('alibaba')}
@@ -151,180 +186,141 @@ const AddFundsPage = () => {
                         </div>
                     </div>
 
-                    {/* === RIGHT: Amount Summary === */}
-                    <div className="right-section">
-                        <div className="summary-card">
-                            <h3>Deposit Amount</h3>
-
-                            <div className="amount-input-box">
-                                <span className="currency-symbol">$</span>
-                                <input
-                                    type="number"
-                                    value={amount}
-                                    onChange={(e) => setAmount(e.target.value)}
-                                    className="big-amount-input"
-                                />
-                            </div>
-
-                            <div className="quick-amounts">
-                                {['25', '50', '100', '500'].map(val => (
-                                    <div key={val} className="chip" onClick={() => setAmount(val + '.00')}>${val}</div>
-                                ))}
-                            </div>
-
-                            <div className="divider"></div>
-
-                            <div className="total-row">
-                                <span>Total to Pay</span>
-                                <span className="price-tag">${amount}</span>
-                            </div>
-
-                            <button className="btn-checkout" onClick={handlePayment}>
-                                {selectedMethod === 'alibaba' ? 'Proceed to Alipay' : 'Add Funds Now'}
-                            </button>
-
-                            <div className="secure-footer">
-                                <ShieldCheck size={16} /> Secure 256-bit SSL Payment
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
 
             <style jsx>{`
-        /* Reuse styles from OrderPage + New styles */
-        .page-container { min-height: 100vh; padding: 40px 20px; background: var(--bg-main); }
-        .content-wrapper { max-width: 1000px; margin: 0 auto; }
-        .page-title { font-size: 32px; margin-bottom: 30px; color: var(--text-main); font-weight: 800; }
-        .layout-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; }
-        
-        .section-header { margin-bottom: 20px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 13px; letter-spacing: 1px; }
-        .payment-options-stack { display: flex; flex-direction: column; gap: 15px; }
+                /* Reuse styles from App.css global logic */
+                .page-container { min-height: 100vh; padding: 40px 20px; background: var(--bg-main); }
+                .content-wrapper { max-width: 1000px; margin: 0 auto; }
+                .page-title { font-size: 32px; margin-bottom: 30px; color: var(--text-main); font-weight: 800; }
 
-        /* Payment Item */
-        .payment-method-item {
-          background: white; border: 2px solid var(--border); border-radius: 20px;
-          overflow: hidden; transition: all 0.2s; cursor: pointer;
-        }
-        .payment-method-item.active { border-color: var(--primary); box-shadow: var(--shadow-card); }
-        
-        .method-header { padding: 20px; display: flex; align-items: center; justify-content: space-between; }
-        .method-left { display: flex; align-items: center; gap: 15px; }
-        .radio-circle {
-          width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border);
-          display: flex; justify-content: center; align-items: center;
-        }
-        .payment-method-item.active .radio-circle { border-color: var(--primary); }
-        .radio-inner { width: 10px; height: 10px; background: var(--primary); border-radius: 50%; }
-        .method-title { font-weight: 700; font-size: 16px; }
-        .method-right { display: flex; align-items: center; gap: 10px; }
-        .card-logos span { font-size: 10px; background: #f3f4f6; padding: 4px 6px; border-radius: 4px; font-weight: bold; color: #555; }
-        .badge-discount { font-size: 12px; background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 12px; font-weight: bold; }
+                /* THE SWAP: Left is now small (Summary), Right is big (Methods) */
+                .layout-grid-swapped { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; }
 
-        .method-expanded-content { border-top: 1px solid var(--border); padding: 25px; background: #f8f9ff; }
-        
-        /* Forms */
-        .card-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .input-group.full { grid-column: span 2; }
-        .input-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
-        .input-group { position: relative; }
-        .secure-input {
-          width: 100%; padding: 12px 15px 12px 40px; border: 1px solid var(--border); border-radius: 12px;
-          outline: none; font-size: 15px; background: white;
-        }
-        .input-lock-icon { position: absolute; left: 12px; top: 38px; color: var(--text-muted); }
+                .section-header { margin-bottom: 20px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 13px; letter-spacing: 1px; }
+                .payment-options-stack { display: flex; flex-direction: column; gap: 15px; }
 
-        .crypto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .crypto-option {
-          background: white; border: 2px solid var(--border); padding: 12px; border-radius: 12px;
-          display: flex; align-items: center; gap: 10px; cursor: pointer;
-        }
-        .crypto-option.selected { border-color: var(--primary); background: #f5f3ff; }
-        .coin-icon { width: 24px; height: 24px; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; font-size: 10px; font-weight: bold; }
-        .coin-name { font-weight: 600; font-size: 14px; }
+                /* Payment Item Styles */
+                .payment-method-item {
+                    background: white; border: 2px solid var(--border); border-radius: 20px;
+                    overflow: hidden; transition: all 0.2s; cursor: pointer;
+                }
+                .payment-method-item.active { border-color: var(--primary); box-shadow: var(--shadow-card); }
 
-        /* Right Summary */
-        .summary-card {
-          background: white; padding: 30px; border-radius: 30px;
-          box-shadow: var(--shadow-hover); border: 1px solid white; position: sticky; top: 30px;
-        }
-        
-        /* Amount Input */
-        .amount-input-box {
-          display: flex; align-items: center; background: #f8f9ff;
-          border: 2px solid var(--border); border-radius: 16px; padding: 10px 20px;
-          margin-bottom: 15px;
-        }
-        .currency-symbol { font-size: 32px; font-weight: 700; color: var(--text-main); }
-        .big-amount-input {
-          width: 100%; border: none; background: transparent; outline: none;
-          font-size: 36px; font-weight: 800; color: var(--primary); margin-left: 5px;
-        }
-        
-        .quick-amounts { display: flex; gap: 10px; margin-bottom: 25px; }
-        .chip {
-          padding: 8px 16px; background: white; border: 1px solid var(--border);
-          border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s;
-        }
-        .chip:hover { border-color: var(--primary); color: var(--primary); }
+                .method-header { padding: 20px; display: flex; align-items: center; justify-content: space-between; }
+                .method-left { display: flex; align-items: center; gap: 15px; }
+                .radio-circle {
+                    width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border);
+                    display: flex; justify-content: center; align-items: center;
+                }
+                .payment-method-item.active .radio-circle { border-color: var(--primary); }
+                .radio-inner { width: 10px; height: 10px; background: var(--primary); border-radius: 50%; }
+                .method-title { font-weight: 700; font-size: 16px; }
+                .method-right { display: flex; align-items: center; gap: 10px; }
+                .card-logos span { font-size: 10px; background: #f3f4f6; padding: 4px 6px; border-radius: 4px; font-weight: bold; color: #555; }
+                .badge-discount { font-size: 12px; background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 12px; font-weight: bold; }
 
-        .divider { height: 1px; background: var(--border); margin: 25px 0; }
-        .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .price-tag { font-size: 32px; font-weight: 800; color: var(--primary); }
+                .method-expanded-content { border-top: 1px solid var(--border); padding: 25px; background: #f8f9ff; }
 
-        .btn-checkout {
-          width: 100%; padding: 18px; border: none; border-radius: 16px;
-          background: var(--primary); color: white; font-weight: 700; font-size: 18px;
-          cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
-        }
-        .btn-checkout:hover { background: var(--primary-hover); transform: translateY(-2px); }
-        
-        .secure-footer { margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; }
+                /* Card Form */
+                .card-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+                .input-group.full { grid-column: span 2; }
+                .input-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+                .input-group { position: relative; }
+                .secure-input {
+                    width: 100%; padding: 12px 15px 12px 40px; border: 1px solid var(--border); border-radius: 12px;
+                    outline: none; font-size: 15px; background: white;
+                }
+                .input-lock-icon { position: absolute; left: 12px; top: 38px; color: var(--text-muted); }
 
-        /* TOAST ERROR */
-        .error-overlay {
-          position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-          display: flex; justify-content: center; align-items: center;
-          background: rgba(0,0,0,0.4); z-index: 9999; backdrop-filter: blur(4px);
-        }
-        .error-toast {
-          background: white; width: 90%; max-width: 400px;
-          padding: 30px; border-radius: 24px;
-          display: flex; flex-direction: column; align-items: center; text-align: center;
-          box-shadow: 0 20px 60px rgba(220, 38, 38, 0.2); position: relative;
-          animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-        }
-        .error-icon-box {
-          width: 70px; height: 70px; background: #ef4444; border-radius: 50%;
-          display: flex; justify-content: center; align-items: center;
-          margin-bottom: 20px; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4);
-        }
-        .error-content h3 { font-size: 22px; color: #111; margin-bottom: 10px; }
-        .error-content p { color: #666; font-size: 15px; line-height: 1.5; }
-        .close-toast {
-          position: absolute; top: 15px; right: 15px; background: #f3f4f6;
-          border: none; width: 32px; height: 32px; border-radius: 50%;
-          display: flex; align-items: center; justify-content: center;
-          cursor: pointer; color: #555;
-        }
+                /* Crypto */
+                .crypto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+                .crypto-option {
+                    background: white; border: 2px solid var(--border); padding: 12px; border-radius: 12px;
+                    display: flex; align-items: center; gap: 10px; cursor: pointer;
+                }
+                .crypto-option.selected { border-color: var(--primary); background: #f5f3ff; }
+                .coin-icon { width: 24px; height: 24px; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; font-size: 10px; font-weight: bold; }
+                .coin-name { font-weight: 600; font-size: 14px; }
 
-        .icon-violet { color: var(--primary); } .icon-gold { color: #f59e0b; } .icon-orange { color: #f97316; }
-        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
-        .animate-slide-down { animation: slideDown 0.3s ease-out; }
-        .animate-pop { animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+                /* Summary Card */
+                .summary-card {
+                    background: white; padding: 30px; border-radius: 30px;
+                    box-shadow: var(--shadow-hover); border: 1px solid white; position: sticky; top: 30px;
+                }
+                .amount-input-box {
+                    display: flex; align-items: center; background: #f8f9ff;
+                    border: 2px solid var(--border); border-radius: 16px; padding: 10px 20px;
+                    margin-bottom: 15px;
+                }
+                .currency-symbol { font-size: 32px; font-weight: 700; color: var(--text-main); }
+                .big-amount-input {
+                    width: 100%; border: none; background: transparent; outline: none;
+                    font-size: 36px; font-weight: 800; color: var(--primary); margin-left: 5px;
+                }
+                .quick-amounts { display: flex; gap: 10px; margin-bottom: 25px; }
+                .chip {
+                    padding: 8px 16px; background: white; border: 1px solid var(--border);
+                    border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s;
+                }
+                .chip:hover { border-color: var(--primary); color: var(--primary); }
+                .divider { height: 1px; background: var(--border); margin: 25px 0; }
+                .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+                .price-tag { font-size: 32px; font-weight: 800; color: var(--primary); }
 
-        @keyframes fadeIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); }}
-        @keyframes slideDown { from { opacity:0; transform: translateY(-10px); height: 0; } to { opacity:1; transform: translateY(0); height: auto; }}
-        @keyframes popUp { from { opacity:0; transform: scale(0.8); } to { opacity:1; transform: scale(1); }}
-        
-        @media (max-width: 900px) { .layout-grid { grid-template-columns: 1fr; } }
-      `}</style>
+                .btn-checkout {
+                    width: 100%; padding: 18px; border: none; border-radius: 16px;
+                    background: var(--primary); color: white; font-weight: 700; font-size: 18px;
+                    cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+                }
+                .btn-checkout:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+                .secure-footer { margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; }
+
+                /* TOAST ERROR */
+                .error-overlay {
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    display: flex; justify-content: center; align-items: center;
+                    background: rgba(0,0,0,0.4); z-index: 9999; backdrop-filter: blur(4px);
+                }
+                .error-toast {
+                    background: white; width: 90%; max-width: 400px;
+                    padding: 30px; border-radius: 24px;
+                    display: flex; flex-direction: column; align-items: center; text-align: center;
+                    box-shadow: 0 20px 60px rgba(220, 38, 38, 0.2); position: relative;
+                    animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+                }
+                .error-icon-box {
+                    width: 70px; height: 70px; background: #ef4444; border-radius: 50%;
+                    display: flex; justify-content: center; align-items: center;
+                    margin-bottom: 20px; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4);
+                }
+                .error-content h3 { font-size: 22px; color: #111; margin-bottom: 10px; }
+                .error-content p { color: #666; font-size: 15px; line-height: 1.5; }
+                .close-toast {
+                    position: absolute; top: 15px; right: 15px; background: #f3f4f6;
+                    border: none; width: 32px; height: 32px; border-radius: 50%;
+                    display: flex; align-items: center; justify-content: center;
+                    cursor: pointer; color: #555;
+                }
+
+                .icon-violet { color: var(--primary); } .icon-gold { color: #f59e0b; } .icon-orange { color: #f97316; }
+                .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+                .animate-slide-down { animation: slideDown 0.3s ease-out; }
+                .animate-pop { animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+
+                @keyframes fadeIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); }}
+                @keyframes slideDown { from { opacity:0; transform: translateY(-10px); height: 0; } to { opacity:1; transform: translateY(0); height: auto; }}
+                @keyframes popUp { from { opacity:0; transform: scale(0.8); } to { opacity:1; transform: scale(1); }}
+
+                @media (max-width: 900px) { .layout-grid-swapped { grid-template-columns: 1fr; } .summary-card { position: static; } }
+            `}</style>
         </div>
     );
 };
 
-// Helper Component (Same as OrderPage)
+// Helper Component
 const PaymentMethodItem = ({ active, onClick, icon, title, logos, badge, children }) => (
     <div className={`payment-method-item ${active ? 'active' : ''}`} onClick={onClick}>
         <div className="method-header">
