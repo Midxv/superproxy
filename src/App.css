@@ -1,162 +1,249 @@
-/* src/App.css - Complete Violet & White Theme */
+/* src/App.css - Proxy Seller Replica Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;600;700;900&display=swap');
 
 :root {
-    /* COLORS */
-    --bg-main: #f8f9ff;       /* Soft Violet Tint Background */
-    --bg-card: #ffffff;       /* Pure White Cards */
+    /* BRAND COLORS */
+    --ps-green: #35be70;       /* The signature green */
+    --ps-green-hover: #2da863;
+    --ps-dark: #3a4763;        /* Main text color */
+    --ps-gray: #f2f2f2;        /* Input borders */
+    --ps-light-green: #ebf9f1; /* Section backgrounds */
+    --ps-white: #ffffff;
 
-    --primary: #7c3aed;       /* Vibrant Violet */
-    --primary-hover: #6d28d9; /* Deep Violet */
-    --accent: #f59e0b;        /* Amber (Alerts/Crypto) */
-
-    --text-main: #111827;     /* Pure Black/Dark Gray */
-    --text-muted: #6b7280;    /* Soft Gray */
-
-    --border: #e5e7eb;        /* Light Gray Border */
-
-    /* SHADOWS & EFFECTS */
-    --radius: 24px;
-    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    --shadow-hover: 0 20px 25px -5px rgba(124, 58, 237, 0.15), 0 10px 10px -5px rgba(124, 58, 237, 0.1);
+    /* UI VARIABLES */
+    --radius: 8px;             /* Standard radius */
+    --radius-btn: 23px;        /* Round buttons */
+    --shadow: 0 12px 30px rgba(0,0,0,0.03);
 }
 
-/* --- GLOBAL RESETS --- */
+/* GLOBAL RESET */
 body {
     margin: 0;
-    background-color: var(--bg-main);
-    color: var(--text-main);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--ps-light-green); /* The Mint Green Background */
+    color: var(--ps-dark);
+    font-family: 'Lato', sans-serif; /* Their specific font */
     -webkit-font-smoothing: antialiased;
 }
 
 * { box-sizing: border-box; }
-
 button { cursor: pointer; font-family: inherit; }
+a { text-decoration: none; color: inherit; }
 
-/* --- DASHBOARD HOME STYLES --- */
-
-.dashboard-container {
-    max-width: 1200px; margin: 0 auto; padding: 60px 20px; text-align: center;
+/* --- HEADER --- */
+.header {
+    background: white;
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    position: relative;
+    z-index: 100;
 }
 
-/* Big Header */
-.brand-title {
-    font-size: 56px; font-weight: 900; letter-spacing: -2px; margin-bottom: 40px; color: #1e1b4b;
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* Black Balance Card */
-.balance-card {
-    background: white; padding: 40px 60px; border-radius: 30px;
-    box-shadow: var(--shadow-card); display: inline-flex; flex-direction: column;
-    align-items: center; border: 1px solid white; margin-bottom: 60px;
+.logo {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--ps-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
-.balance-label {
-    font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;
-    letter-spacing: 1px; margin-bottom: 10px;
-}
-.balance-value {
-    font-size: 64px; font-weight: 800; color: #000000; margin: 0 0 25px 0; line-height: 1;
-}
-.btn-add-funds {
-    background: var(--primary); color: white; border: none; padding: 14px 32px;
-    border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer;
-    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); transition: transform 0.2s;
+
+.logo span { color: var(--ps-green); }
+
+.nav-menu { display: flex; gap: 30px; font-weight: 600; font-size: 15px; }
+.nav-menu a:hover { color: var(--ps-green); }
+
+.user-area { display: flex; gap: 15px; align-items: center; }
+
+.btn-login {
     display: flex; align-items: center; gap: 8px;
-}
-.btn-add-funds:hover { transform: scale(1.05); background: var(--primary-hover); }
-
-/* Product Cards Grid */
-.products-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px; margin-bottom: 80px; text-align: left;
-}
-.product-card {
-    background: white; border: 1px solid var(--border); border-radius: 24px;
-    padding: 30px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex; flex-direction: column; gap: 15px; box-shadow: var(--shadow-card);
-}
-.product-card:hover {
-    transform: translateY(-10px) scale(1.02); box-shadow: var(--shadow-hover);
-    border-color: rgba(124, 58, 237, 0.2);
-}
-.product-card h3 { color: #111; font-size: 20px; margin: 0; font-weight: 700; }
-.product-card .desc { color: #666; font-size: 14px; line-height: 1.5; margin: 0; }
-.product-card .price-tag {
-    color: var(--primary); font-weight: 700; background: #f5f3ff;
-    padding: 6px 12px; border-radius: 20px; width: fit-content;
+    font-weight: 700; font-size: 14px;
+    color: var(--ps-dark);
 }
 
-/* Reviews Section */
-.reviews-section { border-top: 1px solid #e5e7eb; padding-top: 60px; }
-.reviews-header {
-    display: flex; justify-content: center; align-items: center; gap: 10px;
-    margin-bottom: 40px; color: #111;
+.btn-contact {
+    background: var(--ps-green);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: var(--radius-btn);
+    font-weight: 700;
+    font-size: 14px;
+    transition: 0.3s;
 }
-.reviews-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px; text-align: left;
-}
-/* Review Cards (Pop Animation) */
-.review-card-white {
-    background: white !important; border: 1px solid #e5e7eb; border-radius: 24px;
-    padding: 24px; box-shadow: var(--shadow-card); text-align: left;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: default;
-}
-.review-card-white:hover {
-    transform: translateY(-5px) scale(1.01); box-shadow: var(--shadow-hover);
-    border-color: rgba(124, 58, 237, 0.2);
-}
-.review-text { color: #374151; font-size: 14px; line-height: 1.6; margin-bottom: 15px; }
-.review-user { color: #111; font-weight: 700; font-size: 12px; text-transform: uppercase; }
+.btn-contact:hover { background: var(--ps-green-hover); }
 
-
-/* --- PAYMENT PROCESS PAGE (Crypto Timer) --- */
-.payment-page-container {
-    min-height: 100vh; display: flex; justify-content: center; align-items: center;
-    padding: 20px; background: var(--bg-main);
-}
-.payment-card-authentic {
-    background: white; width: 100%; max-width: 500px; padding: 40px;
-    border-radius: 30px; text-align: center; box-shadow: var(--shadow-card);
-    border: 1px solid var(--border);
+/* --- MAIN DASHBOARD LAYOUT --- */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
 }
 
-/* Circle Timer SVG */
-.timer-container { position: relative; width: 260px; height: 260px; margin: 0 auto 40px; cursor: pointer; }
-.timer-svg { transform: rotate(-90deg); }
-.timer-bg { fill: none; stroke: #f3f4f6; }
-.timer-progress { fill: none; stroke: var(--primary); transition: stroke-dashoffset 1s linear; }
-.timer-center-content {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-}
-.time-text { font-size: 56px; font-weight: 800; color: var(--text-main); line-height: 1; }
-
-/* Address Box */
-.address-box {
-    background: #f9fafb; border: 2px solid var(--border); padding: 15px;
-    border-radius: 16px; display: flex; justify-content: space-between;
-    align-items: center; cursor: pointer; transition: 0.2s;
-}
-.address-box:hover { border-color: var(--primary); background: #f5f3ff; }
-.crypto-address {
-    font-family: monospace; font-size: 14px; word-break: break-all;
-    text-align: left; color: var(--text-main);
+.page-title {
+    text-align: center;
+    margin-bottom: 50px;
 }
 
-/* Animations */
-.animate-fade-in { animation: fadeIn 0.5s ease-out; }
-.animate-slide-down { animation: slideDown 0.3s ease-out; }
-.animate-pop { animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+.page-title h1 {
+    font-size: 36px;
+    font-weight: 900;
+    margin: 0 0 10px 0;
+}
 
-@keyframes fadeIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); }}
-@keyframes slideDown { from { opacity:0; transform: translateY(-10px); height: 0; } to { opacity:1; transform: translateY(0); height: auto; }}
-@keyframes popUp { from { opacity:0; transform: scale(0.8); } to { opacity:1; transform: scale(1); }}
+.page-title p {
+    font-size: 18px;
+    color: #7f8b9a;
+    margin: 0;
+}
 
-/* Mobile Responsive */
-@media (max-width: 768px) {
-    .brand-title { font-size: 42px; }
-    .balance-value { font-size: 48px; }
-    .balance-card { width: 100%; padding: 30px; }
-    .layout-grid { grid-template-columns: 1fr; }
+/* --- QUICK ORDER WIDGET (The Core Feature) --- */
+.quick-order-wrapper {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+/* LEFT: The Form */
+.order-form-card {
+    flex: 1;
+    background: white;
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: var(--shadow);
+}
+
+.form-group { margin-bottom: 25px; }
+
+.form-label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.custom-select {
+    width: 100%;
+    height: 50px;
+    border: 1px solid #e1e1e1;
+    border-radius: 6px;
+    padding: 0 20px;
+    font-size: 16px;
+    color: var(--ps-dark);
+    outline: none;
+    background: white url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="%233a4763" viewBox="0 0 16 16"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>') no-repeat right 20px center;
+    appearance: none;
+    cursor: pointer;
+    transition: border 0.3s;
+}
+
+.custom-select:focus { border-color: var(--ps-green); }
+
+/* Flag Grid for Countries */
+.country-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.country-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #e1e1e1;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.country-option:hover { border-color: var(--ps-green); }
+.country-option.active {
+    background: var(--ps-green);
+    border-color: var(--ps-green);
+    color: white;
+}
+
+.country-flag { font-size: 20px; }
+.country-name { font-weight: 600; font-size: 14px; }
+
+/* RIGHT: The Summary (Sticky) */
+.order-summary-card {
+    width: 380px;
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 30px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 15px;
+    color: #7f8b9a;
+}
+
+.summary-row strong { color: var(--ps-dark); }
+
+.total-price-box {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.total-label { font-size: 14px; color: #7f8b9a; display: block; }
+.total-amount { font-size: 36px; font-weight: 900; color: var(--ps-dark); }
+
+.btn-checkout {
+    width: 100%;
+    background: var(--ps-green);
+    color: white;
+    border: none;
+    height: 55px;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 20px;
+    box-shadow: 0 10px 20px rgba(53, 190, 112, 0.3);
+    transition: 0.3s;
+}
+
+.btn-checkout:hover {
+    background: var(--ps-green-hover);
+    transform: translateY(-2px);
+}
+
+/* REVIEWS SECTION */
+.reviews-container {
+    margin-top: 80px;
+}
+.review-card {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    text-align: left;
+}
+.review-stars { color: #00b67a; margin-bottom: 15px; display: flex; gap: 4px; }
+.review-body { font-size: 15px; line-height: 1.6; color: #555; font-style: italic; }
+.review-author { margin-top: 15px; font-weight: 800; font-size: 13px; text-transform: uppercase; }
+
+/* Mobile */
+@media (max-width: 900px) {
+    .quick-order-wrapper { flex-direction: column; }
+    .order-summary-card { width: 100%; position: static; }
+    .nav-menu { display: none; } /* Simple hide for mobile */
 }
