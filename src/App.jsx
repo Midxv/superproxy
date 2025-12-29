@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -8,6 +9,7 @@ import DashboardHome from './pages/DashboardHome';
 import OrderPage from './pages/OrderPage';
 import AddFundsPage from './pages/AddFundsPage';
 import PaymentProcessPage from './pages/PaymentProcessPage';
+import Inventory from './pages/Inventory';
 import LoginPage from './pages/LoginPage';
 import LoadingScreen from './components/LoadingScreen';
 
@@ -47,7 +49,7 @@ function App() {
                             <RedirectIfAuthenticated user={user}><LoginPage /></RedirectIfAuthenticated>
                         } />
 
-                        {/* Protected */}
+                        {/* Protected Routes */}
                         <Route path="/dashboard" element={
                             <ProtectedRoute user={user} loading={loading}><DashboardHome /></ProtectedRoute>
                         } />
@@ -58,6 +60,10 @@ function App() {
 
                         <Route path="/add-funds" element={
                             <ProtectedRoute user={user} loading={loading}><AddFundsPage /></ProtectedRoute>
+                        } />
+
+                        <Route path="/inventory" element={
+                            <ProtectedRoute user={user} loading={loading}><Inventory /></ProtectedRoute>
                         } />
 
                         <Route path="/payment-process" element={

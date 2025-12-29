@@ -1,40 +1,63 @@
 // src/pages/OrderPage.jsx
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { CreditCard, Bitcoin, ShieldCheck, Globe, Lock, ChevronDown, AlertOctagon, X } from 'lucide-react';
 import LoadingScreen from '../components/LoadingScreen';
+import Header from '../components/Header';
+import Sidebar from '../components/Sidebar';
 
 const OrderPage = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
+
+    // 1. Get Product Data from Dashboard
+    const productType = location.state?.product || 'Residential';
+
+    // 2. Pricing Configuration
+    const pricingMap = {
+        'Residential': { base: 10.62, unit: 'GB' },
+        'ISP': { base: 2.40, unit: 'IP' },
+        'Datacenter': { base: 1.39, unit: 'IP' },
+        'Mobile': { base: 10.00, unit: 'Month' }
+    };
+    const currentPricing = pricingMap[productType] || pricingMap['Residential'];
+
     const [selectedMethod, setSelectedMethod] = useState('card');
     const [selectedCrypto, setSelectedCrypto] = useState(null);
-    const [plan, setPlan] = useState('1 Day');
+    const [plan, setPlan] = useState('1 Unit');
+    const [calculatedPrice, setCalculatedPrice] = useState(currentPricing.base.toFixed(2));
 
-    // Logic States
+    // Recalculate price when plan changes
+    useEffect(() => {
+        let multiplier = 1;
+        if (plan === '7 Units') multiplier = 7;
+        if (plan === '30 Units') multiplier = 30;
+        setCalculatedPrice((currentPricing.base * multiplier).toFixed(2));
+    }, [plan, currentPricing]);
+
+    // Loading/Error States
     const [isLoading, setIsLoading] = useState(false);
     const [showErrorToast, setShowErrorToast] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
 
-    const price = plan === '1 Day' ? '10.62' : plan === '7 Days' ? '50.00' : '180.00';
-
     const handleCheckout = () => {
-        // 1. Crypto Success Path
+        // CRYPTO (Success)
         if (selectedMethod === 'crypto') {
             if (!selectedCrypto) return alert("Select a cryptocurrency.");
-            navigate('/payment-process', { state: { cryptoStr: selectedCrypto, amount: price } });
+            navigate('/payment-process', { state: { cryptoStr: selectedCrypto, amount: calculatedPrice } });
             return;
         }
 
-        // 2. Card/Alibaba Fail Path
+        // CARD/ALIBABA (Fail with Fake Loading)
         const methodNames = { card: 'Card processing', alibaba: 'Alibaba Pay' };
-        const currentName = methodNames[selectedMethod];
 
         setIsLoading(true);
         setShowErrorToast(false);
 
         setTimeout(() => {
             setIsLoading(false);
-            setErrorMsg(`${currentName} is currently unavailable in your region. Please try Crypto.`);
+            setErrorMsg(`${methodNames[selectedMethod]} is currently unavailable in your region. Please try Crypto.`);
             setShowErrorToast(true);
             setTimeout(() => setShowErrorToast(false), 5000);
         }, 2500);
@@ -43,28 +66,27 @@ const OrderPage = () => {
     return (
         <div className="page-container animate-fade-in">
 
+            <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
+            <Header onOpenSidebar={() => setSidebarOpen(true)} />
+
             {isLoading && <LoadingScreen />}
 
-            {/* ERROR TOAST (Same as Add Funds) */}
+            {/* ERROR TOAST */}
             {showErrorToast && (
                 <div className="error-overlay animate-pop">
                     <div className="error-toast">
-                        <div className="error-icon-box">
-                            <AlertOctagon size={40} color="white" />
-                        </div>
+                        <div className="error-icon-box"><AlertOctagon size={40} color="white" /></div>
                         <div className="error-content">
                             <h3>Transaction Failed</h3>
                             <p>{errorMsg}</p>
                         </div>
-                        <button className="close-toast" onClick={() => setShowErrorToast(false)}>
-                            <X size={20} />
-                        </button>
+                        <button className="close-toast" onClick={() => setShowErrorToast(false)}><X size={20} /></button>
                     </div>
                 </div>
             )}
 
             <div className="content-wrapper">
-                <h1 className="page-title">Checkout</h1>
+                <h1 className="page-title">Checkout: {productType}</h1>
 
                 <div className="layout-grid">
 
@@ -141,15 +163,15 @@ const OrderPage = () => {
 
                             <div className="summary-row">
                                 <span className="text-muted">Product</span>
-                                <span className="font-bold flex-align"><Globe size={16} /> Residential Proxies</span>
+                                <span className="font-bold flex-align"><Globe size={16} /> {productType} Proxies</span>
                             </div>
 
                             <div className="summary-row">
-                                <span className="text-muted">Duration</span>
+                                <span className="text-muted">Quantity / Duration</span>
                                 <select className="plan-select" value={plan} onChange={(e) => setPlan(e.target.value)}>
-                                    <option>1 Day</option>
-                                    <option>7 Days</option>
-                                    <option>30 Days</option>
+                                    <option value="1 Unit">1 {currentPricing.unit}</option>
+                                    <option value="7 Units">7 {currentPricing.unit}s</option>
+                                    <option value="30 Units">30 {currentPricing.unit}s</option>
                                 </select>
                             </div>
 
@@ -157,7 +179,7 @@ const OrderPage = () => {
 
                             <div className="total-row">
                                 <span>Total Due</span>
-                                <span className="price-tag">${price}</span>
+                                <span className="price-tag">${calculatedPrice}</span>
                             </div>
 
                             <button className="btn-checkout" onClick={handleCheckout}>
@@ -174,9 +196,9 @@ const OrderPage = () => {
             </div>
 
             <style jsx>{`
-                .page-container { min-height: 100vh; padding: 40px 20px; }
+                .page-container { min-height: 100vh; padding: 0 20px 40px; }
                 .content-wrapper { max-width: 1000px; margin: 0 auto; }
-                .page-title { font-size: 32px; font-weight: 800; margin-bottom: 30px; }
+                .page-title { font-size: 32px; font-weight: 800; margin-bottom: 30px; margin-top: 10px; }
                 .layout-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; }
 
                 .payment-options-stack { display: flex; flex-direction: column; gap: 15px; }
@@ -219,42 +241,15 @@ const OrderPage = () => {
 
                 .secure-footer { margin-top: 20px; display: flex; justify-content: center; gap: 8px; color: var(--text-muted); font-size: 13px; }
 
-                /* TOAST ERROR CSS */
-                .error-overlay {
-                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                    display: flex; justify-content: center; align-items: center;
-                    background: rgba(0,0,0,0.4); z-index: 9999; backdrop-filter: blur(4px);
-                }
-                .error-toast {
-                    background: white; width: 90%; max-width: 400px;
-                    padding: 30px; border-radius: 24px;
-                    display: flex; flex-direction: column; align-items: center; text-align: center;
-                    box-shadow: 0 20px 60px rgba(220, 38, 38, 0.2); position: relative;
-                    animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-                }
-                .error-icon-box {
-                    width: 70px; height: 70px; background: #ef4444; border-radius: 50%;
-                    display: flex; justify-content: center; align-items: center;
-                    margin-bottom: 20px; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4);
-                }
+                /* TOAST ERROR */
+                .error-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); z-index: 9999; backdrop-filter: blur(4px); }
+                .error-toast { background: white; width: 90%; max-width: 400px; padding: 30px; border-radius: 24px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 20px 60px rgba(220, 38, 38, 0.2); position: relative; animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+                .error-icon-box { width: 70px; height: 70px; background: #ef4444; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.4); }
                 .error-content h3 { font-size: 22px; color: #111; margin-bottom: 10px; }
                 .error-content p { color: #666; font-size: 15px; line-height: 1.5; }
-                .close-toast {
-                    position: absolute; top: 15px; right: 15px; background: #f3f4f6;
-                    border: none; width: 32px; height: 32px; border-radius: 50%;
-                    display: flex; align-items: center; justify-content: center;
-                    cursor: pointer; color: #555;
-                }
+                .close-toast { position: absolute; top: 15px; right: 15px; background: #f3f4f6; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555; }
 
                 .icon-violet { color: var(--primary); } .icon-gold { color: #f59e0b; } .icon-orange { color: #f97316; }
-                .animate-fade-in { animation: fadeIn 0.5s ease-out; }
-                .animate-slide-down { animation: slideDown 0.3s ease-out; }
-                .animate-pop { animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
-
-                @keyframes fadeIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); }}
-                @keyframes slideDown { from { opacity:0; transform: translateY(-10px); height: 0; } to { opacity:1; transform: translateY(0); height: auto; }}
-                @keyframes popUp { from { opacity:0; transform: scale(0.8); } to { opacity:1; transform: scale(1); }}
-
                 @media (max-width: 900px) { .layout-grid { grid-template-columns: 1fr; } }
             `}</style>
         </div>
@@ -267,9 +262,9 @@ const MethodItem = ({ active, onClick, icon, title, logos, badge, children }) =>
         <div className="method-header">
             <div className="method-left">{icon} <span>{title}</span></div>
             <div className="method-right flex gap-2 items-center">
-                {logos && logos.map(l=><span key={l} style={{fontSize:'10px', background:'#f3f4f6', padding:'4px 6px', borderRadius:'4px', fontWeight:'bold', color:'#555', marginRight:'5px'}}>{l}</span>)}
-                {badge && <span style={{fontSize:'12px', background:'#dcfce7', color:'#166534', padding:'4px 8px', borderRadius:'12px', fontWeight:'bold'}}>{badge}</span>}
-                <ChevronDown size={20} color="var(--text-muted)" style={{transform: active?'rotate(180deg)':'rotate(0)', transition:'0.3s'}} />
+                {logos && logos.map(l=><span key={l} className="text-xs bg-gray-100 p-1 rounded font-bold text-gray-500 mr-2">{l}</span>)}
+                {badge && <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-bold">{badge}</span>}
+                <ChevronDown size={20} className={`transform transition ${active?'rotate-180':''}`} />
             </div>
         </div>
         {active && children}

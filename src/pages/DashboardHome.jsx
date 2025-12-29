@@ -1,56 +1,45 @@
+// src/pages/DashboardHome.jsx
 import React, { useState } from 'react';
-import { Plus, Globe, Server, Smartphone, Shield, Star, Menu } from 'lucide-react';
+import { Plus, Globe, Server, Smartphone, Shield, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 
 const DashboardHome = () => {
     const navigate = useNavigate();
     const [isSidebarOpen, setSidebarOpen] = useState(false);
 
+    // Helper to navigate with state
+    const handleOrder = (productType) => {
+        navigate('/order', { state: { product: productType } });
+    };
+
     return (
         <div className="dashboard-container">
 
-            {/* Slide-out Sidebar */}
             <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
+            <Header onOpenSidebar={() => setSidebarOpen(true)} />
 
-            {/* 1. TOP HEADER & BALANCE SECTION */}
-            <div className="hero-section">
-
-                {/* Navigation Bar */}
-                <div className="top-nav">
-                    <button className="menu-btn" onClick={() => setSidebarOpen(true)}>
-                        <Menu size={28} color="#1e1b4b" />
-                    </button>
-                </div>
-
-                {/* Big Brand Logo */}
-                <h1 className="brand-title">
-                    Super<span style={{ color: 'var(--primary)' }}>Proxy</span>
-                </h1>
-
-                {/* Balance Card */}
+            {/* Balance Section */}
+            <div style={{ textAlign: 'center', marginBottom: '50px' }}>
                 <div className="balance-card animate-pop">
                     <p className="balance-label">Available Balance</p>
                     <h2 className="balance-value">$0.00</h2>
 
-                    <button
-                        className="btn-add-funds"
-                        onClick={() => navigate('/add-funds')} // Goes to Add Funds Page
-                    >
+                    <button className="btn-add-funds" onClick={() => navigate('/add-funds')}>
                         <Plus size={18} strokeWidth={3} /> Add Funds
                     </button>
                 </div>
-
             </div>
 
-            {/* 2. PRODUCTS GRID */}
+            {/* Product Grid */}
             <div className="products-grid">
                 <ProductCard
                     icon={<Globe size={32} className="icon-blue" />}
                     title="Residential"
                     price="$1.75 / GB"
                     desc="Ethical IPs for scraping & unblocking."
-                    onClick={() => navigate('/order')}
+                    onClick={() => handleOrder('Residential')}
                 />
 
                 <ProductCard
@@ -58,7 +47,7 @@ const DashboardHome = () => {
                     title="ISP Proxies"
                     price="$2.40 / IP"
                     desc="High speed static IPs for accounts."
-                    onClick={() => navigate('/order')}
+                    onClick={() => handleOrder('ISP')}
                 />
 
                 <ProductCard
@@ -66,7 +55,7 @@ const DashboardHome = () => {
                     title="Datacenter"
                     price="$1.39 / IP"
                     desc="99.9% Uptime with 10Gbps speeds."
-                    onClick={() => navigate('/order')}
+                    onClick={() => handleOrder('Datacenter')}
                 />
 
                 <ProductCard
@@ -74,11 +63,11 @@ const DashboardHome = () => {
                     title="Mobile 4G/5G"
                     price="$10.00 / Mo"
                     desc="Real carrier networks for verification."
-                    onClick={() => navigate('/order')}
+                    onClick={() => handleOrder('Mobile')}
                 />
             </div>
 
-            {/* 3. REVIEWS */}
+            {/* Reviews */}
             <div className="reviews-section">
                 <div className="reviews-header">
                     <Star fill="#00b67a" stroke="none" size={28} />
@@ -94,23 +83,13 @@ const DashboardHome = () => {
             </div>
 
             <style jsx>{`
-        .hero-section { text-align: center; margin-bottom: 50px; position: relative; }
-        .top-nav { position: absolute; top: 0; left: 0; }
-        .menu-btn {
-          background: white; border: 1px solid var(--border); padding: 10px;
-          border-radius: 12px; cursor: pointer; transition: 0.2s;
-          box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-        }
-        .menu-btn:hover { transform: scale(1.05); background: #f8f9ff; }
-        
-        .icon-blue { color: #3b82f6; } .icon-red { color: #ef4444; }
-        .icon-violet { color: #8b5cf6; } .icon-orange { color: #f97316; }
-      `}</style>
+                .icon-blue { color: #3b82f6; } .icon-red { color: #ef4444; }
+                .icon-violet { color: #8b5cf6; } .icon-orange { color: #f97316; }
+            `}</style>
         </div>
     );
 };
 
-// Sub-Components
 const ProductCard = ({ icon, title, price, desc, onClick }) => (
     <div className="product-card" onClick={onClick}>
         <div style={{ background: '#f3f4f6', width: 'fit-content', padding: '12px', borderRadius: '14px', marginBottom: '15px' }}>
