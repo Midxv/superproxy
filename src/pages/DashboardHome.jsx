@@ -1,12 +1,25 @@
 // src/pages/DashboardHome.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Globe, Server, Smartphone, Shield, Star, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+import { db, auth } from '../firebaseConfig';
+import { doc, onSnapshot } from "firebase/firestore";
 
 const DashboardHome = () => {
     const navigate = useNavigate();
     const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const [balance, setBalance] = useState(0.00);
+
+    // Balance Listener
+    useEffect(() => {
+        if (auth.currentUser) {
+            const unsub = onSnapshot(doc(db, "users", auth.currentUser.uid), (doc) => {
+                if (doc.exists()) setBalance(doc.data().balance);
+            });
+            return () => unsub();
+        }
+    }, []);
 
     const handleOrder = (productType) => {
         navigate('/order', { state: { product: productType } });
@@ -26,14 +39,14 @@ const DashboardHome = () => {
                     </button>
                 </div>
 
-                {/* MASSIVE LOGO INCREASED */}
+                {/* MASSIVE LOGO */}
                 <h1 className="brand-title-dashboard">
                     Super<span style={{ color: 'var(--primary)' }}>Proxy</span>
                 </h1>
 
                 <div className="balance-card animate-pop">
                     <p className="balance-label">Available Balance</p>
-                    <h2 className="balance-value">$0.00</h2>
+                    <h2 className="balance-value">${balance ? balance.toFixed(2) : '0.00'}</h2>
 
                     <button
                         className="btn-add-funds"
@@ -69,7 +82,7 @@ const DashboardHome = () => {
                 />
             </div>
 
-            {/* 3. GENUINE REVIEWS */}
+            {/* 3. REVIEWS */}
             <div className="reviews-section">
                 <div className="reviews-header">
                     <Star fill="#00b67a" stroke="none" size={28} />
@@ -85,25 +98,24 @@ const DashboardHome = () => {
             </div>
 
             <style jsx>{`
-        .hero-section { text-align: center; margin-bottom: 50px; position: relative; padding-top: 20px; }
-        .top-nav { position: absolute; top: 20px; left: 0; }
-        .menu-btn {
-          background: white; border: 1px solid var(--border); padding: 10px;
-          border-radius: 12px; cursor: pointer; transition: 0.2s;
-          box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-        }
-        .menu-btn:hover { transform: scale(1.05); background: #f8f9ff; }
-        
-        /* INCREASED LOGO SIZE SPECIFICALLY FOR DASHBOARD */
-        .brand-title-dashboard {
-          font-size: 64px; /* Bigger than 56px */
-          font-weight: 900; letter-spacing: -3px; margin-bottom: 40px; color: #1e1b4b;
-        }
-        @media (max-width: 768px) { .brand-title-dashboard { font-size: 48px; } }
+                .hero-section { text-align: center; margin-bottom: 50px; position: relative; padding-top: 20px; }
+                .top-nav { position: absolute; top: 20px; left: 0; }
+                .menu-btn {
+                    background: white; border: 1px solid var(--border); padding: 10px;
+                    border-radius: 12px; cursor: pointer; transition: 0.2s;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+                }
+                .menu-btn:hover { transform: scale(1.05); background: #f8f9ff; }
 
-        .icon-blue { color: #3b82f6; } .icon-red { color: #ef4444; }
-        .icon-violet { color: #8b5cf6; } .icon-orange { color: #f97316; }
-      `}</style>
+                .brand-title-dashboard {
+                    font-size: 64px;
+                    font-weight: 900; letter-spacing: -3px; margin-bottom: 40px; color: #1e1b4b;
+                }
+                @media (max-width: 768px) { .brand-title-dashboard { font-size: 48px; } }
+
+                .icon-blue { color: #3b82f6; } .icon-red { color: #ef4444; }
+                .icon-violet { color: #8b5cf6; } .icon-orange { color: #f97316; }
+            `}</style>
         </div>
     );
 };
