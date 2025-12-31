@@ -79,7 +79,8 @@ const OrderPage = () => {
         if (isResidential) {
             const gbMap = { '10GB': 10, '50GB': 50, '300GB': 300, '1000GB': 1000 };
             const gbs = gbMap[plan] || 10;
-            price = gbs * 1.75;
+            // --- UPDATED PRICE: 1.25 per GB ---
+            price = gbs * 1.25;
         } else {
             const baseMap = { 'ISP': 2.40, 'Datacenter': 1.39, 'Mobile': 10.00 };
             const base = baseMap[productType] || 2.00;
@@ -216,9 +217,9 @@ const OrderPage = () => {
                                         </>
                                     ) : (
                                         <>
-                                            <option value="1 Unit">1 Unit</option>
-                                            <option value="7 Units">7 Units</option>
-                                            <option value="30 Units">30 Units</option>
+                                            <option value="1 Unit">1 Week</option>
+                                            <option value="7 Units">3 Months</option>
+                                            <option value="30 Units">1 Year</option>
                                         </>
                                     )}
                                 </select>
@@ -228,6 +229,7 @@ const OrderPage = () => {
 
                             <div className="total-row">
                                 <span>Total Due</span>
+                                {/* Updated to display USD symbol as per app consistency */}
                                 <span className="price-tag">${calculatedPrice}</span>
                             </div>
 

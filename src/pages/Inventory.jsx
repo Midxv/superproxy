@@ -1,6 +1,6 @@
 // src/pages/Inventory.jsx
 import React, { useState, useEffect } from 'react';
-import { PackageOpen, Copy, Power, Clock } from 'lucide-react';
+import { Copy, Power, Clock } from 'lucide-react'; // Removed PackageOpen
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { db, auth } from '../firebaseConfig';
@@ -59,7 +59,9 @@ const Inventory = () => {
                 {proxies.length === 0 && !loading ? (
                     // --- EMPTY STATE (Shows initially when boolean is false) ---
                     <div className="empty-state">
-                        <div className="icon-box"><PackageOpen size={48} color="#d1d5db" /></div>
+                        {/* TEXT LOGO REPLACEMENT */}
+                        <h2 className="logo-text">SUPERPROXY</h2>
+
                         <h3>No orders made yet!</h3>
                         <p>Your active proxies and purchase history will appear here.</p>
                         <button className="btn-browse" onClick={() => window.location.href='/dashboard'}>
@@ -148,7 +150,7 @@ const Inventory = () => {
 
                 /* Empty State */
                 .empty-state { text-align: center; margin-top: 80px; display: flex; flex-direction: column; align-items: center; }
-                .icon-box { background: white; padding: 20px; border-radius: 50%; box-shadow: var(--shadow-card); margin-bottom: 20px; }
+                .logo-text { font-size: 32px; font-weight: 900; color: #ccc; margin-bottom: 20px; letter-spacing: -1px; } /* New Logo Text Style */
                 .btn-browse { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 20px; }
                 .btn-browse:hover { transform: translateY(-2px); }
 

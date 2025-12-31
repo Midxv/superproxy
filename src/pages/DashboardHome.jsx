@@ -62,7 +62,7 @@ const DashboardHome = () => {
             <div className="products-grid">
                 <ProductCard
                     icon={<Globe size={32} className="icon-blue" />}
-                    title="Residential" price="$1.75 / GB" desc="Ethical IPs for scraping & unblocking."
+                    title="Residential" price="$1.25 / GB" desc="Ethical IPs for scraping & unblocking."
                     onClick={() => handleOrder('Residential')}
                 />
                 <ProductCard
