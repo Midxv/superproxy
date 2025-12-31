@@ -140,7 +140,7 @@ const OrderPage = () => {
         setShowErrorToast(false);
         setTimeout(() => {
             setIsLoading(false);
-            setErrorMsg("Transaction declined please try again");
+            setErrorMsg("Transaction declined.Check Your Payment Method");
             setShowErrorToast(true);
             setTimeout(() => setShowErrorToast(false), 5000);
         }, 2500);
