@@ -18,10 +18,10 @@ const PaymentProcessPage = () => {
 
     // Mock Addresses
     const addresses = {
-        BTC: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
-        ETH: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
-        USDT: 'TZ4UXy7P52v22333222111133332222111',
-        LTC: 'ltc1qg97t7555555555566666666777777778888888'
+        BTC: 'bc1qs9a4wueps4vgnwzk7pl9szhd4675ey89ur4dkv',
+        ETH: '0xCf6AECb29fF3b6Cc1955405B260932679E2963D2',
+        USDT: 'TUzyFwPuKcD59TLtNet4qzAJb4pQMrREFD',
+        LTC: 'La5M1uKFrC8cY3BzKB32e79g6pDp15qknL'
     };
     const currentAddress = addresses[cryptoStr] || addresses.LTC;
 
